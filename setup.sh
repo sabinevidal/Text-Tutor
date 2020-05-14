@@ -1,6 +1,5 @@
 
-export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/YOUR_DATABASE
+export DATABASE_URL=postgresql://sabinevidal:password@localhost:5432/text-tutor
 export AUTH0_DOMAIN=text-tutor.eu.auth0.com
 export ALGORITHMS=['RS256']
-export API_AUDIENCE=YOUR_AUDIENCE
-export TEST_AUTH=
+export API_AUDIENCE=https://text-tutor/
