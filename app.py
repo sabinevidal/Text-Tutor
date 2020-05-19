@@ -1,9 +1,9 @@
 import os
-from flask import Flask, request, abort, jsonify, render_template
+from flask import Flask, request, redirect, abort, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
-from models import db_drop_and_create_all, setup_db
+from models import db_drop_and_create_all, setup_db, Tutor
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#

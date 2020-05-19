@@ -53,12 +53,15 @@ class Tutor(db.Model):
 
     # TODO: what is this???
     # def __init__(self, )
+    def __repr__(self):
+        return '<Tutor %r>' % self.name
 
     def short(self):
         return {
             'id': self.id,
             'name': self.name
         }
+    
 
 '''
 Subject
@@ -78,3 +81,4 @@ class TutorsSubjects(db.Model):
 
     tutor_id = db.Column(Integer, ForeignKey('Tutors.id'), primary_key=True)
     subject = db.Column(Integer, ForeignKey('Subjects.id'), primary_key=True)
+
