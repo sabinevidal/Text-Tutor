@@ -5,7 +5,7 @@
 import os
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, ForeignKey, CheckConstraint, Boolean
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 import json
 #----------------------------------------------------------------------------#
 # App Config.
@@ -36,23 +36,16 @@ def db_drop_and_create_all():
 # Models.
 #----------------------------------------------------------------------------#
 
-'''
-Tutor
-'''
-
 class Tutor(db.Model):
-    __tablename__ = 'tutor'
+    __tablename__ = 'tutors'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     phone = Column(String, nullable=False)
-    availability = Column(Boolean, nullable=True)
 
-    tutor_subjects = relationship('Subject', backref='tutor', lazy=True)
+    subjects = relationship('Subject', secondary="tutor_subjects", backref=backref('tutors', lazy=True))
 
-    # TODO: what is this???
-    # def __init__(self, )
     def __repr__(self):
         return '<Tutor %r>' % self.name
 
@@ -61,24 +54,23 @@ class Tutor(db.Model):
             'id': self.id,
             'name': self.name
         }
-    
 
-'''
-Subject
-'''
 class Subject(db.Model):
-    __tablename__ = 'subject'
+    __tablename__ = 'subjects'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     grade =  Column(Integer, nullable=False)
-'''
-Tutor Subject TODO: Do i need this?????
-'''
+
+    def __repr__(self):
+        return '<Subject %r>' %self.name
 
 class TutorsSubjects(db.Model):
-    __tablename__ = 'tutors_subjects'
+    __tablename__ = 'tutor_subjects'
 
-    tutor_id = db.Column(Integer, ForeignKey('Tutors.id'), primary_key=True)
-    subject = db.Column(Integer, ForeignKey('Subjects.id'), primary_key=True)
+    tutor_id = Column(Integer, ForeignKey('tutors.id'), primary_key=True)
+    subject_id = Column(Integer, ForeignKey('subjects.id'), primary_key=True)
+
+    tutor = relationship(Tutor, backref=backref("tutor_subjects", cascade="all, delete-orphan"))
+    subject = relationship(Subject, backref=backref("tutor_subjects", cascade="all, delete-orphan"))
 
