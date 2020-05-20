@@ -2,29 +2,15 @@
 
 {% block content %}
 <div class="container">
-  <h1 class="my-4">Text Tutor</h1>
-  {% if tutors|length < 1 %}
-  <p>There are no tutors available at the moment.</p>
-  {% else %}
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Groceries</th>
-        <th>Added</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for tutor in tutors %}
-      <tr>
-        <td><a href="">{{ tutor.name }}</a></td>
-        <td>{{ tutor.phone }}</td>
-        <td class="text-right"><a class="btn btn-danger btn-sm" href="" role="button">Delete</a></td>
-      </tr>
+  <h1 class="my-4">{{ title }} - Text Tutor</h1>
+    <body>
+      <h1>Hi, {{ user.username }}!</h1>
+      {% for post in posts %}
+      <div>
+        <p>{{ post.tutor.name }}</p>
+        <p>{{ post.subjects }}</p>
+      </div>
       {% endfor %}
-    </tbody>
-  </table>
-  {% endif %}
 
 
 </div>

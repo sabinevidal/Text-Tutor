@@ -52,7 +52,8 @@ class Tutor(db.Model):
     def short(self):
         return {
             'id': self.id,
-            'name': self.name
+            'name': self.name,
+            'subjects': self.subjects
         }
 
 class Subject(db.Model):

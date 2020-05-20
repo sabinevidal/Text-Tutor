@@ -24,13 +24,25 @@ CORS(app)
 # ----------------------------------
 
 @app.route('/')
+@app.route('/index')
 def index():
-    return render_template('index.html')
+    user = {'username': 'Sabine'}
+    posts = [
+        {
+            'tutor': {'name': 'John'},
+            'subjects': 'Gr8 Maths'
+        },
+        {
+            'tutor': {'name': 'Susan'},
+            'subjects': 'Gr9 Science, gr10 Maths'
+        }
+    ]
+    return render_template('index.html', title='Home!', user=user, posts=posts)
 
 
 @app.route('/tutors')
 def get_tutors():
-  tutors = tutor.query.all()
+  tutors = Tutor.query.all()
 
   if len(tutors) == 0:
     abort(404)
