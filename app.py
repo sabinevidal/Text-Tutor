@@ -52,10 +52,26 @@ def get_tutors():
     'tutors': tutors
   })
 
-@app.route('/tutors/new', methods=['POST'])
-def add_tutor():
-  body = request.get_json()
+@app.route('/tutors/create', methods=['GET'])
+def create_tutor_form():
+  form = TutorForm()
+  return render_template('templates/forms/new_tutor.html', form=form)
 
+@app.route('/tutors/create, methods=['POST'])
+def add_tutor():
+  tutor_form = TutorForm(request.form)
+  # body = request.get_json()
+  #  CHECK bc API uses JSON... vs form?? 
+  name = body.get('name', None)
+  phone = body.get('phone', None)
+  email = body.get('email', None)
+  subjects = form.subjects.raw_data
+  # WHAT IS RAW_DATA 
+
+  try:
+    form = TutorForm()
+    name = form.name.data
 
 if __name__ == '__main__':
     app.run(debug=True)
+
