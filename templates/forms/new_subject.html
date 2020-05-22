@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>New Tutor</h1>
+    <form action="" method="post">
+        <h3 class="form-heading">List a new artist</h3>
+        <div class="form-group">
+          <label for="name">Name</label>
+          {{ form.name(class_ = 'form-control', autofocus = true) }}
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            {{ form.phone(class_ = 'form-control', placeholder='xxx-xxx-xxxx', autofocus = true) }}
+        </div>
+        <div class="form-group">
+            <label for="phone">Email</label>
+            {{ form.email(class_ = 'form-control', placeholder='name@email.com', autofocus = true) }}
+        </div>
+        <div class="form-group">
+            <label for="subjects">Subjects</label>
+            <small>Ctrl+Click to select multiple</small>
+            {{ form.subjects(class_ = 'form-control', placeholder='Subjects, separated by commas', id=form.state, autofocus = true) }}
+        </div>
+        <!-- TODO: RELOOK at multiple select form-->
+        <input type="submit" value="Create Artist" class="btn btn-primary btn-lg btn-block">
+    </form>
+{% endblock %}
