@@ -39,6 +39,11 @@ def db_drop_and_create_all():
 # Models.
 #----------------------------------------------------------------------------#
 
+#format tutor's subjects
+def format_gr_subjects(subjects):
+    return [subject.format() for subject in subjects]
+
+# Tutor
 class Tutor(db.Model):
     __tablename__ = 'tutors'
 
@@ -46,17 +51,32 @@ class Tutor(db.Model):
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     phone = Column(String, nullable=False)
+    image_link = Column(String, nullable=False)
 
-    subjects = relationship('Subject', secondary="tutor_subjects", backref=backref('tutors', lazy=True))
-
-    def __repr__(self):
-        return '<Tutor %r>' % self.name
+    subject = relationship('Subject', secondary="tutor_subjects", backref=backref('tutors', lazy=True))
 
     def short(self):
         return {
             'id': self.id,
             'name': self.name,
-            'subjects': self.subjects
+            'subject': self.subject
+        }
+
+    def __init__(self, name, email, phone):
+        self.name = name
+        self.email = email
+        self.phone = phone
+
+    def __repr__(self):
+        return '<Tutor: %r>' %self.name
+
+    def format(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'subject': format_subjects(self.subject)
         }
 
 class Subject(db.Model):
@@ -66,8 +86,20 @@ class Subject(db.Model):
     name = Column(String, nullable=False)
     grade =  Column(Integer, nullable=False)
 
+    def __init__(self, name, grade):
+        self.name = name
+        self.grade = grade
+
     def __repr__(self):
-        return '<Subject %r>' %self.name
+        return '<Subject: %r>' %self.name
+
+    def format(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'grade': self.grade
+        }
+
 
 class TutorsSubjects(db.Model):
     __tablename__ = 'tutor_subjects'

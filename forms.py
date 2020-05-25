@@ -20,5 +20,23 @@ class TutorForm(Form):
     phone = StringField(
         'phone', validators=[DataRequired()]
     )
-    subjects = QuerySelectMultipleField('Subjects', validators=[DataRequired()],
+    image_link = StringField(
+        'image_link'
+    )
+    subject = QuerySelectMultipleField('Subjects', validators=[DataRequired()],
                                         query_factory=subject_query, allow_blank=True, get_label='subjects')
+
+class SubjectForm(Form):
+    name = StringField(
+        'name', validators=[DataRequired()]
+    )
+    grade = SelectField(
+        'Grade', validators=[DataRequired()],
+        coerce=int, choices=[
+            ('7', '7'),
+            ('8', '8'),
+            ('9', '9'),
+            ('10', '10'),
+            ('11', '11'),
+            ('12', '12')
+        ])
