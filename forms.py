@@ -23,8 +23,8 @@ class TutorForm(Form):
     # image_link = StringField(
     #     'image_link'
     # )
-    gr_subjects = QuerySelectMultipleField('Subjects', validators=[DataRequired()],
-                                        query_factory=subject_query, allow_blank=True)
+    classes = QuerySelectMultipleField('Subjects', validators=[DataRequired()],
+                                        query_factory=subject_query)
 
 class SubjectForm(Form):
     name = StringField(

@@ -13,9 +13,10 @@ from config import Config
 # App Config.
 #----------------------------------------------------------------------------#
 
-database_filename = "text-tutor.db"
+database_filename = "text-tutor"
 project_dir = os.path.dirname(os.path.abspath(__file__))
-database_path = "sqlite:///{}".format(os.path.join(project_dir, database_filename))
+# database_path = os.environ['DATABASE_URL']
+database_path = "postgres://sabinevidal:password@{}/{}".format('localhost:5432', database_filename)
 
 db = SQLAlchemy()
 
@@ -31,17 +32,17 @@ db_drop_and_create_all()
     can be used to initialize a clean database
     !!NOTE you can change the database_filename variable to have multiple verisons of a database
 '''
-def db_drop_and_create_all():
-    db.drop_all()
-    db.create_all()
+# def db_drop_and_create_all():
+#     db.drop_all()
+#     db.create_all()
 
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
 
 #format tutor's subjects
-def format_subjects(subjects):
-    return [subject.format() for subject in subjects]
+def format_classes(classes):
+    return [Subject.format() for Subject in classes]
 
 # Tutor
 class Tutor(db.Model):
@@ -53,7 +54,7 @@ class Tutor(db.Model):
     phone = Column(String, nullable=False)
     # image_link = Column(String, nullable=True)
 
-    gr_subjects = relationship('Subject', secondary="tutor_subjects", backref=backref('tutors', lazy=True))
+    classes = relationship('Subject', secondary="tutor_subjects", backref=backref('tutors', lazy=True))
 
     # def short(self):
     #     return {
@@ -62,10 +63,11 @@ class Tutor(db.Model):
     #         'gr_subjects': self.gr_subjects
     #     }
 
-    def __init__(self, name, email, phone):
+    def __init__(self, name, email, phone, classes):
         self.name = name
         self.email = email
         self.phone = phone
+        self.classes = classes
 
     def __repr__(self):
         return '<Tutor: %r>' %self.name
@@ -87,7 +89,7 @@ class Tutor(db.Model):
             'name': self.name,
             'email': self.email,
             'phone': self.phone,
-            'gr_subjects': format_subjects(self.gr_subjects)
+            'classes': format_classes(self.classes)
         }
 
 class Subject(db.Model):

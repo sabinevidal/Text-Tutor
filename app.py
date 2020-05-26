@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, request, redirect, abort, jsonify, render_template, flash, session
+from flask import Flask, request, redirect, abort, jsonify, render_template, flash, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_wtf import Form
@@ -83,10 +83,13 @@ def create_app(test_config=None):
         new_name = form.name.data
         new_phone = form.phone.data
         new_email = form.email.data
-        new_gr_subjects = form.gr_subjects.raw_data
+        new_classes = form.classes.data
 
         try:
-            new_tutor = Tutor(name=new_name, phone=new_phone, email=new_email, gr_subjects=new_gr_subjects)
+            new_tutor = Tutor(
+                name=new_name, phone=new_phone,
+                email=new_email, classes=new_classes
+            )
 
         except Exception as e:
             print('ERROR: ', str(e))
@@ -130,3 +133,8 @@ def create_app(test_config=None):
         })
 
     return app
+
+app = create_app()
+
+if __name__ == '__main__':
+    app.run()
