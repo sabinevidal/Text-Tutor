@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, AnyOf, URL
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 import enum
 
-from models import Tutor, Subject
+from models import *
 
 def subject_query():
     return Subject.query
@@ -20,11 +20,11 @@ class TutorForm(Form):
     phone = StringField(
         'phone', validators=[DataRequired()]
     )
-    image_link = StringField(
-        'image_link'
-    )
-    subject = QuerySelectMultipleField('Subjects', validators=[DataRequired()],
-                                        query_factory=subject_query, allow_blank=True, get_label='subjects')
+    # image_link = StringField(
+    #     'image_link'
+    # )
+    gr_subjects = QuerySelectMultipleField('Subjects', validators=[DataRequired()],
+                                        query_factory=subject_query, allow_blank=True)
 
 class SubjectForm(Form):
     name = StringField(

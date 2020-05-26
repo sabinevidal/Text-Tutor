@@ -40,7 +40,7 @@ def db_drop_and_create_all():
 #----------------------------------------------------------------------------#
 
 #format tutor's subjects
-def format_gr_subjects(subjects):
+def format_subjects(subjects):
     return [subject.format() for subject in subjects]
 
 # Tutor
@@ -51,16 +51,16 @@ class Tutor(db.Model):
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     phone = Column(String, nullable=False)
-    image_link = Column(String, nullable=False)
+    # image_link = Column(String, nullable=True)
 
-    subject = relationship('Subject', secondary="tutor_subjects", backref=backref('tutors', lazy=True))
+    gr_subjects = relationship('Subject', secondary="tutor_subjects", backref=backref('tutors', lazy=True))
 
-    def short(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'subject': self.subject
-        }
+    # def short(self):
+    #     return {
+    #         'id': self.id,
+    #         'name': self.name,
+    #         'gr_subjects': self.gr_subjects
+    #     }
 
     def __init__(self, name, email, phone):
         self.name = name
@@ -87,7 +87,7 @@ class Tutor(db.Model):
             'name': self.name,
             'email': self.email,
             'phone': self.phone,
-            'subject': format_subjects(self.subject)
+            'gr_subjects': format_subjects(self.gr_subjects)
         }
 
 class Subject(db.Model):

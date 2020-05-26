@@ -77,26 +77,27 @@ def create_app(test_config=None):
 
     @app.route('/tutors/create', methods=['POST'])
     def add_tutor():
-        tutor_form = TutorForm(request.form)
-        # body = request.get_json()
-        #  CHECK bc API uses JSON... vs form??
-        name = body.get('name', None)
-        phone = body.get('phone', None)
-        email = body.get('email', None)
-        image_link = body.get('image_link', None)
-        subjects = form.subjects.raw_data
-        # WHAT IS RAW_DATA
+        body = request.get_json()
+        form = TutorForm(request.form)
+
+        new_name = form.name.data
+        new_phone = form.phone.data
+        new_email = form.email.data
+        new_gr_subjects = form.gr_subjects.raw_data
 
         try:
-            form = TutorForm()
-            name = form.name.data
-            phone = form.phone.data
-            email = form.email.data
-            image_link = form.image_link.data
-            # subjects =
+            new_tutor = Tutor(name=new_name, phone=new_phone, email=new_email, gr_subjects=new_gr_subjects)
+
         except Exception as e:
             print('ERROR: ', str(e))
             abort(422)
+
+        flash(f'Tutor:{new_name} successfully created!')
+
+        return jsonify({
+            'success': True,
+            'subject': new_tutor.format()
+        })
 
 
     @app.route('/subjects/create', methods=['GET'])
@@ -111,9 +112,6 @@ def create_app(test_config=None):
 
         new_name = form.name.data
         new_grade = form.grade.data
-
-        # if ((new_name == "") or (new_grade == "")):
-        #     abort(422)
 
         try:
             new_subject = Subject(
