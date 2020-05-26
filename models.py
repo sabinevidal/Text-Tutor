@@ -104,7 +104,7 @@ class Subject(db.Model):
         self.grade = grade
 
     def __repr__(self):
-        return '<Subject: %r>' %self.name
+        return 'Gr{}: {}'.format(self.grade, self.name)
 
     def insert(self):
         db.session.add(self)
