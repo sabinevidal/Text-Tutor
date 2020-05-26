@@ -70,6 +70,17 @@ class Tutor(db.Model):
     def __repr__(self):
         return '<Tutor: %r>' %self.name
 
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     def format(self):
         return {
             'id': self.id,
@@ -92,6 +103,18 @@ class Subject(db.Model):
 
     def __repr__(self):
         return '<Subject: %r>' %self.name
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
 
     def format(self):
         return {

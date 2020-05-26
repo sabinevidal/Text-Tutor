@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, request, redirect, abort, jsonify, render_template
+from flask import Flask, request, redirect, abort, jsonify, render_template, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_wtf import Form
@@ -17,7 +17,6 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
     setup_db(app)
-    wtforms_json.init()
 
     # Set up CORS with '*' for origins
     CORS(app, resources={'/': {'origins': '*'}})
@@ -85,7 +84,7 @@ def create_app(test_config=None):
         phone = body.get('phone', None)
         email = body.get('email', None)
         image_link = body.get('image_link', None)
-        gr_subjects = form.gr_subjects.raw_data
+        subjects = form.subjects.raw_data
         # WHAT IS RAW_DATA
 
         try:
@@ -108,29 +107,28 @@ def create_app(test_config=None):
     @app.route('/subjects/create', methods=['POST'])
     def add_subject():
         body = request.get_json()
-        form = TutorForm(request.form)
+        form = SubjectForm(request.form)
 
-        name = request.json.get('name')
-        grade = request.json.get('grade')
+        new_name = form.name.data
+        new_grade = form.grade.data
 
-        if ((name == "") or (grade == "")):
-            abort(422)
-
-        subject = Subject(
-            name=name, grade=grade
-        )
+        # if ((new_name == "") or (new_grade == "")):
+        #     abort(422)
 
         try:
-            subject.insert()
+            new_subject = Subject(
+                name=new_name, grade=new_grade
+            )
+            new_subject.insert()
         except Exception as e:
             print('ERROR: ', str(e))
             abort(422)
 
-        flash(f'Plant {name} successfully created!')
+        flash(f'{new_grade}:{new_name} successfully created!')
 
         return jsonify({
             'success': True,
-            'subject': subject.format()
+            'subject': new_subject.format()
         })
 
     return app
