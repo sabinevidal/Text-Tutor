@@ -90,6 +90,7 @@ def create_app(test_config=None):
                 name=new_name, phone=new_phone,
                 email=new_email, classes=new_classes
             )
+            new_tutor.insert()
 
         except Exception as e:
             print('ERROR: ', str(e))
@@ -121,6 +122,7 @@ def create_app(test_config=None):
                 name=new_name, grade=new_grade
             )
             new_subject.insert()
+
         except Exception as e:
             print('ERROR: ', str(e))
             abort(422)
