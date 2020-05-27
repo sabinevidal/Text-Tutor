@@ -57,7 +57,6 @@ def create_app(test_config=None):
         return render_template('index.html', title='Home!', user=user, posts=posts)
 
 # ----------- TUTORS ----------
-# CREATE 
 
     @app.route('/tutors')
     def get_tutors():
@@ -70,7 +69,22 @@ def create_app(test_config=None):
         'success': True,
         'tutors': tutors
         })
+    @app.route('/tutors/<int:id>')
+    def show_tutor(id):
 
+        tutor = Tutor.query.filter_by(id=id).one_or_none()
+
+        if tutor is None:
+            abort(404)
+
+        return render_template('/pages/show_tutor.html', tutor=tutor)
+        return jsonify({
+            'success': True,
+            'tutor': tutor.format()
+        })
+
+
+# CREATE
     @app.route('/tutors/create', methods=['GET'])
     def create_tutor_form():
         form = TutorForm()
@@ -139,19 +153,19 @@ def create_app(test_config=None):
 
         if tutor is None:
             abort(404)
-
-        body = request.get_json()
-
-        if 'name' in body:
-            tutor.name = form.name.data
-        if 'phone' in body:
-            tutor.phone = form.phone.data
-        if 'email' in body:
-            tutor.email = form.email.data
-        if 'classes' in body:
-            tutor.classes = form.classes.data
-
         try:
+            body = request.get_json()
+
+            if 'name' in body:
+                tutor.name = form.name.data
+            if 'phone' in body:
+                tutor.phone = form.phone.data
+            if 'email' in body:
+                tutor.email = form.email.data
+            if 'classes' in body:
+                tutor.classes = form.classes.data
+
+
             tutor.insert()
         except Exception as e:
             print('EXCEPTION: ', str(e))
