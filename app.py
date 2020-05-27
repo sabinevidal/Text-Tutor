@@ -153,6 +153,32 @@ def create_app(test_config=None):
 
         return render_template('/forms/edit_subject.html', title='Edit Subject', form=form), 200
 
+    # TODO: Finish SEARCH
+    # @app.route('/subjects/search', methods=['POST'])
+    # def search_subjects():
+    #     # Get user input
+    #     body = request.get_json()
+    #     search_term = body.get('searchTerm', None)
+
+    #     # If a search term has been entered, apply filter for question string
+    #     # and check if there are results
+    #     try:
+    #         if search_term:
+    #             selection = Tutor.query.filter(Tutor.subjects.any(name=nameilike
+    #                                               (f'%{search_term}%')).all()
+
+    #         # paginate and return results
+    #         paginated = paginate_questions(request, selection)
+
+    #         return jsonify({
+    #             'success': True,
+    #             'questions':  paginated,
+    #             'total_questions': len(selection),
+    #             'current_category': None
+    #         })
+    #     except:
+    #         abort(404)
+
     # -----------------------------------------------------------
     # API Routes
     # -----------------------------------------------------------
