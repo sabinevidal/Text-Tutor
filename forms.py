@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField
 from wtforms.validators import DataRequired, AnyOf, URL
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
@@ -10,7 +10,7 @@ from models import *
 def subject_query():
     return Subject.query
 
-class TutorForm(Form):
+class TutorForm(FlaskForm):
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -26,7 +26,7 @@ class TutorForm(Form):
     classes = QuerySelectMultipleField('Subjects', validators=[DataRequired()],
                                         query_factory=subject_query)
 
-class SubjectForm(Form):
+class SubjectForm(FlaskForm):
     name = StringField(
         'name', validators=[DataRequired()]
     )

@@ -3,9 +3,8 @@ import json
 from flask import Flask, request, redirect, abort, jsonify, render_template, flash, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import Form
-import wtforms_json
 
 from models import *
 from forms import *
@@ -57,6 +56,8 @@ def create_app(test_config=None):
         ]
         return render_template('index.html', title='Home!', user=user, posts=posts)
 
+# ----------- TUTORS ----------
+# CREATE 
 
     @app.route('/tutors')
     def get_tutors():
@@ -86,11 +87,11 @@ def create_app(test_config=None):
         new_classes = form.classes.data
 
         try:
-            new_tutor = Tutor(
+            tutor = Tutor(
                 name=new_name, phone=new_phone,
                 email=new_email, classes=new_classes
             )
-            new_tutor.insert()
+            tutor.insert()
 
         except Exception as e:
             print('ERROR: ', str(e))
@@ -100,9 +101,76 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'subject': new_tutor.format()
+            'tutors': tutor.format()
         })
 
+    # EDIT
+    @app.route('/tutors/<int:id>/edit', methods=['GET'])
+    # @login_required
+    # @requires_auth('patch:tutors')
+    def edit_tutor(*args, **kwargs):
+        id = kwargs['id']
+        form = TutorForm()
+        tutor = Tutor.query.filter_by(id=id).one_or_none()
+
+        tutor={
+            "id": tutor.id,
+            "name": tutor.name,
+            "phone": tutor.phone,
+            "email": tutor.email,
+            "classes": tutor.classes
+        }
+        # form placeholders
+        form.name.process_data(tutor['name'])
+        form.phone.process_data(tutor['phone'])
+        form.email.process_data(tutor['email'])
+        form.classes.process_data(tutor['classes'])
+
+        return render_template('/forms/edit_tutor.html', title='Edit Tutor', form=form)
+
+
+
+    @app.route('/tutors/<int:id>edit', methods=['PATCH'])
+    # @requires_auth('patch:tutors')
+    def edit_tutor_submit(*args, **kwargs):
+        id = kwargs['id']
+        form = TutorForm()
+        tutor = Tutor.query.filter_by(id=id).one_or_none()
+
+        if tutor is None:
+            abort(404)
+
+        body = request.get_json()
+
+        if 'name' in body:
+            tutor.name = form.name.data
+        if 'phone' in body:
+            tutor.phone = form.phone.data
+        if 'email' in body:
+            tutor.email = form.email.data
+        if 'classes' in body:
+            tutor.classes = form.classes.data
+
+        try:
+            tutor.insert()
+        except Exception as e:
+            print('EXCEPTION: ', str(e))
+            abort(400)
+
+        flash(f'{tutor.name}\'s details successfully updated.')
+
+        return jsonify({
+            'success': True,
+            'tutors': tutor.format()
+        })
+
+
+
+# DELETE
+
+
+# ----------- SUBJECTS ----------
+# CREATE 
 
     @app.route('/subjects/create', methods=['GET'])
     def create_subject_form():
@@ -133,6 +201,12 @@ def create_app(test_config=None):
             'success': True,
             'subject': new_subject.format()
         })
+
+# EDIT
+
+
+# DELETE
+
 
 # -----------------------------------------------------------
 # Error Handlers
