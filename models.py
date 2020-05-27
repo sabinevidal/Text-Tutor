@@ -44,6 +44,12 @@ db_drop_and_create_all()
 def format_classes(classes):
     return [Subject.format() for Subject in classes]
 
+def format_tutors(tutors):
+    return [tutor.format() for tutor in tutors]
+
+def format_subjects(subjects):
+    return [subject.format() for subject in subjects]
+
 # Tutor
 class Tutor(db.Model):
     __tablename__ = 'tutors'
@@ -121,8 +127,8 @@ class Subject(db.Model):
     def format(self):
         return {
             'id': self.id,
-            'name': self.name,
-            'grade': self.grade
+            'grade': self.grade,
+            'name': self.name
         }
 
 
