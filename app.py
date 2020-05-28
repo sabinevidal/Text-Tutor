@@ -153,6 +153,25 @@ def create_app(test_config=None):
 
         return render_template('/forms/edit_subject.html', title='Edit Subject', form=form), 200
 
+    # TODO: Finish this
+    @app.route('/subjects/<int:id>/tutors')
+    def get_subject_tutors(id):
+        '''
+        Handles GET requests for getting tutors based on subjects
+        '''
+        subject = Subject.query.filter_by(id=id).one_or_none()
+
+        try:
+            selection = Tutor.query.filter_by(subject=subject.id).all()
+
+            return jsonify({
+                'success': True,
+                'tutors': selection,
+                'total_tutors': len(Tutor.query.all()),
+            })
+        except:
+            abort(400)
+
     # TODO: Finish SEARCH
     # @app.route('/subjects/search', methods=['POST'])
     # def search_subjects():
@@ -355,6 +374,8 @@ def create_app(test_config=None):
         '''
         body = request.get_json()
         form = SubjectForm(request.form)
+        print('body: ', body)
+        print('form: ', form.__dict__)
 
         name = form.name.data
         grade = form.grade.data

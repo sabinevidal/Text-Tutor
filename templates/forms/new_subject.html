@@ -2,31 +2,31 @@
 {% block content %}
 <div class="container">
     <h1>New Subject</h1>
-    <form action="/" method="post">
+    <form action="" method="post"  >
         <h3 class="form-heading">List a new subject</h3>
         <div class="form-field">
           <label for="name">Name</label>
-          {{ form.name.label }} {{ form.name(size=20) }}
+          {{ form.name.label(id="name") }} {{ form.name }}
         </div>
         <div class="form-field">
             <label for="grade">Grade</label>
-            {{ form.grade.label }} {{ form.grade }}
+            {{ form.grade.label }} {{ form.grade(id="grade") }}
         </div>
-        <input type="submit" value="Create Subject" class="btn btn-primary btn-lg btn-block" onclick="submitSubject()">
-            Submit</button>
+        <input type="button" id ="createBtn" value="Create Subject" class="btn btn-primary btn-lg btn-block" onclick="submitSubject()">
 
     </form>
 </div>
     <script type="text/javascript">
 
         function submitSubject() {
-            let name = document.getElementsByName("name");
-            let grade = document.getElementsByName("grade");
+            let name = document.getElementById("name");
+            let grade = document.getElementById("grade");
 
             let data = {
                 "name": name,
                 "grade": grade
             }
+            console.log('Data: ', data)
 
             fetch(`${window.location.origin}/api/subjects/create`, {
                 method: 'POST',
