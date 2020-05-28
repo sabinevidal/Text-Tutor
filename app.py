@@ -164,8 +164,9 @@ def create_app(test_config=None):
     #     # and check if there are results
     #     try:
     #         if search_term:
-    #             selection = Tutor.query.filter(Tutor.subjects.any(name=nameilike
-    #                                               (f'%{search_term}%')).all()
+    #             selection = Tutor.query.filter(Tutor.subjects.any(name=name).all()
+    #  TODO: ilike(f'%{search_term}%')).all()
+    #
 
     #         # paginate and return results
     #         paginated = paginate_questions(request, selection)
@@ -214,7 +215,7 @@ def create_app(test_config=None):
             'success': True,
             'tutor': tutor.format()
         })
-    
+
     @app.route('/api/tutors/create', methods=['POST'])
     # @requires_auth('post:tutors')
     def create_tutor_api():
@@ -344,31 +345,33 @@ def create_app(test_config=None):
 
     @app.route('/api/subjects/create', methods=['POST'])
     # @requires_auth('post:subjects')
-    def create_subject_api()
+    def create_subject_api():
         '''
         Handles API POST requests for creating new subject. Returns JSON.
         '''
         body = request.get_json()
         form = SubjectForm(request.form)
 
-        new_name = form.name.data
-        new_grade = form.grade.data
+        name = form.name.data
+        grade = form.grade.data
+
+        subject = Subject(
+                name=name, grade=grade
+            )
 
         try:
-            new_subject = Subject(
-                name=new_name, grade=new_grade
-            )
-            new_subject.insert()
+            subject.insert()
+            redirect(create_subject_api)
 
         except Exception as e:
             print('ERROR: ', str(e))
             abort(422)
 
-        flash(f'{subject.new_grade}:{subject.new_name} successfully created!')
+        flash(f'{subject.grade}:{subject.name} successfully created!')
 
         return jsonify({
             'success': True,
-            'subject': new_subject.format()
+            'subject': subject.format()
         })
 
     @app.route('/api/subjects/<int:id>/edit', methods=['PATCH'])
