@@ -223,14 +223,18 @@ def create_app(test_config=None):
         body = request.get_json()
         form = TutorForm(request.form)
 
-        new_name = form.name.data
-        new_phone = form.phone.data
-        new_email = form.email.data
-        new_classes = form.classes.data
+        name = form.name.data
+        phone = form.phone.data
+        email = form.email.data
+        classes = form.classes.data
+
+        if ((name == "") or (phone == "")
+                or (email == "")):
+            abort(422)
 
         tutor = Tutor(
-                name=new_name, phone=new_phone,
-                email=new_email, classes=new_classes
+                name=name, phone=phone,
+                email=email, classes=classes
         )
 
         try:
@@ -240,7 +244,7 @@ def create_app(test_config=None):
             print('ERROR: ', str(e))
             abort(422)
 
-        flash(f'Tutor:{new_name} successfully created!')
+        flash(f'Tutor:{name} successfully created!')
 
         return jsonify({
             'success': True,
@@ -354,7 +358,8 @@ def create_app(test_config=None):
 
         name = form.name.data
         grade = form.grade.data
-
+        print('Name: ', name)
+        print('Grade: ', grade)
         subject = Subject(
                 name=name, grade=grade
             )

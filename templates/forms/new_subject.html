@@ -12,16 +12,16 @@
             <label for="grade">Grade</label>
             {{ form.grade.label }} {{ form.grade }}
         </div>
-        <button type="button" value="Create Subject" class="btn btn-primary btn-lg btn-block" onclick="submitSubject()">
+        <input type="submit" value="Create Subject" class="btn btn-primary btn-lg btn-block" onclick="submitSubject()">
             Submit</button>
 
     </form>
 </div>
-    <script>
+    <script type="text/javascript">
 
         function submitSubject() {
-            let name = document.getElementById("name");
-            let grade = document.getElementById("grade");
+            let name = document.getElementsByName("name");
+            let grade = document.getElementsByName("grade");
 
             let data = {
                 "name": name,

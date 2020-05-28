@@ -23,7 +23,7 @@ class TutorForm(FlaskForm):
     # image_link = StringField(
     #     'image_link'
     # )
-    classes = QuerySelectMultipleField('Subjects', [DataRequired()],
+    classes = QuerySelectMultipleField('Subjects',
                                         query_factory=subject_query)
     submit = SubmitField('Submit')
 
