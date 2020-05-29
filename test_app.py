@@ -3,8 +3,8 @@ import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
 
-from app import create_app
-from models import setup_db, Question, Category, db
+from app import *
+from models import *
 
 
 class TextTutorTestCase(unittest.TestCase):
@@ -36,6 +36,14 @@ class TextTutorTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
 
+    def test_get_subjects(self):
+        """ Tests success of loading tutors"""
+        response = self.client().get('/subjects')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+
     def test_create_tutors(self):
         """Tests tutor creation"""
         tutor = {
@@ -44,96 +52,122 @@ class TextTutorTestCase(unittest.TestCase):
             'email': 'lizzo@email.com',
         }
 
-        # get questions before post. Create question, load response data
-        # and get num questions after
-        questions_before = len(Question.query.all())
+        tutors_before = len(Tutor.query.all())
 
-        response = self.client().post('/questions', json=tutor)
+        response = self.client().post('/tutors', json=tutor)
         data = json.loads(response.data)
-        questions_after = len(Question.query.all())
+        tutors_after = len(Tutor.query.all())
 
         # check status code, success message & compare length before & after
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(questions_after, questions_before + 1)
+        self.assertEqual(tutors_after, tutors_before + 1)
 
-    def test_delete_question(self):
+    def test_create_subjects(self):
+        """Tests tutor creation"""
+        subject = {
+            'name': 'English',
+            'grade': '7',
+        }
+
+        subjects_before = len(Subject.query.all())
+
+        response = self.client().post('/subjects', json=subject)
+        data = json.loads(response.data)
+        subjects_after = len(Subject.query.all())
+
+        # check status code, success message & compare length before & after
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(subjects_after, subjects_before + 1)
+
+    def test_delete_tutor(self):
         """ Tests question delete success """
-        # create a new question to be deleted
-        question = Question(question="is a test?",
-                            answer='yes', category=1, difficulty=1)
-        question.insert()
-        q_id = question.id
+        tutor = Tutor(
+            name="Lizzo",
+            phone='1231234123',
+            email="lizzo@email.com",
+            classes=" "
+        )
 
-        questions_before = Question.query.all()
+        tutor.insert()
+        t_id = tutor.id
 
-        response = self.client().delete('/questions/{}'.format(q_id))
+        tutors_before = Tutor.query.all()
+
+        response = self.client().delete('/tutors/{}'.format(t_id))
         data = json.loads(response.data)
 
-        questions_after = Question.query.all()
-        question = Question.query.filter(Question.id == 1).one_or_none()
+        tutors_after = Tutor.query.all()
+        tutor = Tutor.query.filter(Tutor.id == 1).one_or_none()
 
         # check status code, success message & compare length before & after
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['deleted'], q_id)
-        self.assertTrue(len(questions_before) - len(questions_after) == 1)
-        self.assertEqual(question, None)
+        self.assertEqual(data['deleted'], t_id)
+        self.assertTrue(len(tutors_before) - len(tutors_after) == 1)
+        self.assertEqual(tutor, None)
 
-    def test_422_create_question(self):
-        """test failure of question creation error 400"""
-        # get num of questions before post, create question without json data,
-        # get num questions after
-        questions_before = Question.query.all()
+        def test_delete_subject(self):
+        """ Tests question delete success """
+        subject = Subject(
+            name="Art",
+            grade='8'
+        )
 
-        response = self.client().post('/questions', json={})
+        subject.insert()
+        s_id = subject.id
+
+        subjects_before = Subject.query.all()
+
+        response = self.client().delete('/subject/{}'.format(t_id))
         data = json.loads(response.data)
-        questions_after = Question.query.all()
 
-        # check status code, false success message
-        # and compare length before & after
+        subjects_after = Subject.query.all()
+        subject = Subject.query.filter(Subject.id == 1).one_or_none()
+
+        # check status code, success message & compare length before & after
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['deleted'], s_id)
+        self.assertTrue(len(subjects_before) - len(subjects_after) == 1)
+        self.assertEqual(subject, None)
+
+    def test_422_create_tutor(self):
+        """test failure of question creation error 400"""
+        tutors_before = Tutor.query.all()
+
+        response = self.client().post('/tutors', json={})
+        data = json.loads(response.data)
+        tutors_after = Tutor.query.all()
+
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
-        self.assertTrue(len(questions_before) == len(questions_after))
+        self.assertTrue(len(tutors_before) == len(tutors_after))
 
-    def test_search_question(self):
-        """test success fo searchin questions"""
-        # send post request with search term, load response data
-        # new_search = {'searchTerm': 'a'}
-        response = self.client().post('/questions/search', json={
-            'searchTerm': 'palace'})
+    def test_422_create_subject(self):
+        """test failure of question creation error 400"""
+        subjects_before = Subject.query.all()
+
+        response = self.client().post('/subjects', json={})
         data = json.loads(response.data)
+        subjects_after = Subject.query.all()
 
-        # check status code, success message,
-        # that there are questions in the search results
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertIsNotNone(data['questions'])
-        self.assertIsNotNone(data['total_questions'])
-
-    def test_404_search_questions(self):
-        """test for no search results 404"""
-        response = self.client().post('/questions/search', json={
-            'searchTerm': ''})
-        data = json.loads(response.data)
-
-        # check status code, false success message
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], "resource not found")
+        self.assertTrue(len(subjects_before) == len(subjects_after))
 
-    def test_get_category_questions(self):
+    def test_get_subject_tutors(self):
         """test success of getting questions by categories"""
-        response = self.client().get('/categories/1/questions')
+        response = self.client().get('/subjects/1/tutors')
         data = json.loads(response.data)
 
         # check status code, success message,
         # num of questions and current category
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertTrue(len(data['questions']))
-        self.assertTrue(data['total_questions'])
-        self.assertTrue(data['current_category'])
+        self.assertTrue(len(data['tutors']))
+        self.assertTrue(data['total_tutors'])
 
     def test_404_get_category_questions(self):
         """test for 404 error with no questions from category"""
