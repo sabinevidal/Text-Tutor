@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>New Tutor</h1>
+    <form action="" method="post">
+        <h3 class="form-heading">List a new tutor</h3>
+        <div class="form-group">
+          <label for="name">Name</label>
+          {{ form.name(class_ = 'form-control', autofocus = true) }}
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            {{ form.phone(class_ = 'form-control', placeholder='xxx-xxx-xxxx', autofocus = true) }}
+        </div>
+        <div class="form-group">
+            <label for="phone">Email</label>
+            {{ form.email(class_ = 'form-control', placeholder='name@email.com', autofocus = true) }}
+        </div>
+        <div class="form-group">
+            <label for="classes">Classes</label>
+            <small>Ctrl+Click to select multiple</small>
+            {{ form.classes(class_ = 'form-control', placeholder='Subjects, separated by commas', autofocus = true) }}
+        </div>
+        <!-- TODO: RELOOK at multiple select form-->
+        <input type="submit" value="Create Tutor" class="btn btn-primary btn-lg btn-block">
+    </form>
+{% endblock %}
+{% block script %}
+
+<script>
+
+    function submit_input() {
+
+        var name = document.getElementById("name");
+        var message = document.getElementById("message");
+
+        var entry = {
+            name: name.value,
+            message: message.value
+        };
+    }
+
+</script>
+
+{% endblock %}

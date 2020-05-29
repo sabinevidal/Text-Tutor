@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ tutor.name }} | Tutor{% endblock %}
+{% block content %}
+<div class="container">
+    {% for tutor in tutors %}
+    <h1 class="my-4">{{ tutor.name }} | Text Tutor</h1>
+    <div class="row">
+
+        <div class="col">
+                <p>{{ tutor.name }}</p>
+                <p>{{ tutor.subjects }}</p>
+        </div>
+        <div class="col">
+            <p>{{ tutor.phone }}</p>
+            <p>{{ tutor.email }}</p>
+        </div>
+        <div class="col">
+            <p>{{ tutor.classes }}</p>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock content %}

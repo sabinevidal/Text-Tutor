@@ -65,4 +65,4 @@ curl http://127.0.0.1:5000/api/tutors/create -X POST -H "Content-Type: applicati
 
 
 
-curl http://127.0.0.1:5000/subjects/create -X POST -H "Content-Type: application/json" -d '{"name": "English", "grade": "8"}'
+curl http://127.0.0.1:5000/api/subjects -X POST -H "Content-Type: application/json" -d '{"name": "English", "grade": "8"}'
