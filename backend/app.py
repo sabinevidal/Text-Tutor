@@ -40,6 +40,7 @@ def create_app(test_config=None):
 # ROUTES
 # ----------------------------------
 
+# TODO: index home page
     @app.route('/')
     @app.route('/index')
     def index():
@@ -60,6 +61,9 @@ def create_app(test_config=None):
 
     @app.route('/tutors')
     def get_tutors():
+        '''
+        Handles GET requests for tutors.
+        '''
         tutors = Tutor.query.all()
 
         if len(tutors) == 0:
@@ -73,7 +77,9 @@ def create_app(test_config=None):
 
     @app.route('/tutors/<int:id>')
     def show_tutor(id):
-
+        '''
+        Handles GET requests for tutor by id.
+        '''
         tutor = Tutor.query.filter_by(id=id).one_or_none()
 
         if tutor is None:
@@ -83,18 +89,23 @@ def create_app(test_config=None):
             'success': True,
             'tutor': tutor.format()
         }
-        print('response: ', response)
         return jsonify(response)
 
 
 # CREATE
     @app.route('/tutors/create', methods=['GET'])
     def create_tutor_form():
+        '''
+        Handles GET requests for creating a tutor.
+        '''
         form = TutorForm()
         return render_template('/forms/new_tutor.html', title='New Tutor', form=form)
 
     @app.route('/tutors/create', methods=['POST'])
     def add_tutor():
+        '''
+        Handles POST requests for creating a tutor.
+        '''
         body = request.get_json()
         form = TutorForm(request.form)
 
