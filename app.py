@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, request, redirect, abort, jsonify, render_template, flash, session, url_for
+from flask import Flask, request, redirect, abort, jsonify, render_template, flash, session, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_wtf import FlaskForm
@@ -34,7 +34,7 @@ def create_app(test_config=None):
     !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
     !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
     '''
-    # db_drop_and_create_all()
+    db_drop_and_create_all()
 
 # ----------------------------------
 # ROUTES
@@ -43,52 +43,91 @@ def create_app(test_config=None):
     @app.route('/')
     @app.route('/index')
     def index():
-
-        return render_template('index.html', title='Home', tutors=tutors, subjects=subjects)
+        user = {'username': 'Sabine'}
+        posts = [
+            {
+                'tutor': {'name': 'John'},
+                'subjects': 'Gr8 Maths'
+            },
+            {
+                'tutor': {'name': 'Susan'},
+                'subjects': 'Gr9 Science, gr10 Maths'
+            }
+        ]
+        return render_template('index.html', title='Home!', user=user, posts=posts)
 
 # ----------- TUTORS ----------
 
     @app.route('/tutors')
     def get_tutors():
-        '''
-        Handles GET requests for getting all tutors
-        '''
-        response = get_tutors_api()
-        data = json.loads(response.data)
-        tutors = data['tutors']
+        tutors = Tutor.query.all()
 
-        return render_template('pages/tutors.html', tutors=tutors), 200
+        if len(tutors) == 0:
+            abort(404)
+
+        response = {
+            'success': True,
+            'tutors': tutors
+        }
+        return jsonify(response)
 
     @app.route('/tutors/<int:id>')
     def show_tutor(id):
-        '''
-        Handles GET requests for getting tutor by id
-        '''
 
-        response = show_tutor_api(id)
-        data = json.loads(response.data)
-        tutor = data['tutor']
+        tutor = Tutor.query.filter_by(id=id).one_or_none()
 
-        return render_template('/pages/show_tutor.html', tutor=tutor), 200
+        if tutor is None:
+            abort(404)
 
+        response = {
+            'success': True,
+            'tutor': tutor.format()
+        }
+        print('response: ', response)
+        return jsonify(response)
+
+
+# CREATE
     @app.route('/tutors/create', methods=['GET'])
-    # @login_required
-    # @requires_auth('post:tutors')
     def create_tutor_form():
-        '''
-        Handles GET requests for new tutor form page.
-        '''
         form = TutorForm()
-        return render_template('/forms/new_tutor.html', title='New Tutor', form=form),200
+        return render_template('/forms/new_tutor.html', title='New Tutor', form=form)
+
+    @app.route('/tutors/create', methods=['POST'])
+    def add_tutor():
+        body = request.get_json()
+        form = TutorForm(request.form)
+
+        new_name = form.name.data
+        new_phone = form.phone.data
+        new_email = form.email.data
+        new_classes = form.classes.data
+
+        try:
+            tutor = Tutor(
+                name=new_name, phone=new_phone,
+                email=new_email, classes=new_classes
+            )
+            tutor.insert()
+
+        except Exception as e:
+            print('ERROR: ', str(e))
+            abort(422)
+
+        flash(f'Tutor:{new_name} successfully created!')
+
+        response = {
+            'success': True,
+            'tutor': tutor.format()
+        }
+
+        return jsonify(response)
 
     # EDIT
     @app.route('/tutors/<int:id>/edit', methods=['GET'])
     # @login_required
     # @requires_auth('patch:tutors')
     def edit_tutor(*args, **kwargs):
-        '''
-        Handles GET requests for edit tutor form.
-        '''
         id = kwargs['id']
         form = TutorForm()
         tutor = Tutor.query.filter_by(id=id).one_or_none()
@@ -106,176 +145,13 @@ def create_app(test_config=None):
         form.email.process_data(tutor['email'])
         form.classes.process_data(tutor['classes'])
 
-        return render_template('/forms/edit_tutor.html', title='Edit Tutor', form=form), 200
+        return render_template('/forms/edit_tutor.html', title='Edit Tutor', form=form)
 
-# ----------- SUBJECTS ----------
 
-    @app.route('/subjects')
-    def get_subjects():
-        '''
-        Handles GET requests for getting all subjects.
-        '''
-        response = get_subjects_api()
-        data = json.loads(response.data)
-        subjects = data['subjects']
 
-        return render_template('/pages/subjects.html', subjects=subjects), 200
-
-    @app.route('/subjects/create', methods=['GET'])
-    # @login_required
-    # @requires_auth('post:subject')
-    def create_subject_form():
-        '''
-        Handles GET requests for new subject form page.
-        '''
-        form = SubjectForm()
-        return render_template('/forms/new_subject.html', title='New Subject', form=form), 200
-
-    @app.route('/subjects/<int:id>/edit')
-    # @login_required
-    # @requires_auth('patch:subjects')
-    def edit_subject(*args, **kwargs):
-        '''
-        Handles GET requests for edit subject form.
-        '''
-        id = kwargs['id']
-        form = SubjectForm()
-        subject = Subject.query.filter_by(id=id).one_or_none()
-
-        tutor={
-            "id": subject.id,
-            "name": subject.name,
-            "grade": subject.grade
-        }
-        # form placeholders
-        form.grade.process_data(subject['grade'])
-        form.name.process_data(subject['name'])
-
-        return render_template('/forms/edit_subject.html', title='Edit Subject', form=form), 200
-
-    # TODO: Finish this
-    @app.route('/subjects/<int:id>/tutors')
-    def get_subject_tutors(id):
-        '''
-        Handles GET requests for getting tutors based on subjects
-        '''
-        subject = Subject.query.filter_by(id=id).one_or_none()
-
-        try:
-            selection = Tutor.query.filter_by(subject=subject.id).all()
-
-            return jsonify({
-                'success': True,
-                'tutors': selection,
-                'total_tutors': len(Tutor.query.all()),
-            })
-        except:
-            abort(400)
-
-    # TODO: Finish SEARCH
-    # @app.route('/subjects/search', methods=['POST'])
-    # def search_subjects():
-    #     # Get user input
-    #     body = request.get_json()
-    #     search_term = body.get('searchTerm', None)
-
-    #     # If a search term has been entered, apply filter for question string
-    #     # and check if there are results
-    #     try:
-    #         if search_term:
-    #             selection = Tutor.query.filter(Tutor.subjects.any(name=name).all()
-    #  TODO: ilike(f'%{search_term}%')).all()
-    #
-
-    #         # paginate and return results
-    #         paginated = paginate_questions(request, selection)
-
-    #         return jsonify({
-    #             'success': True,
-    #             'questions':  paginated,
-    #             'total_questions': len(selection),
-    #             'current_category': None
-    #         })
-    #     except:
-    #         abort(404)
-
-    # -----------------------------------------------------------
-    # API Routes
-    # -----------------------------------------------------------
-
-    @app.route('/api/tutors')
-    def get_tutors_api():
-        '''
-        Handles API GET requests for getting all tutors. Returns JSON.
-        '''
-        tutors = Tutor.query.all()
-
-        if len(tutors) == 0:
-            abort(404)
-
-        tutors = format_tutors(tutors)
-
-        return jsonify({
-            'success': True,
-            'tutors': tutors
-        })
-
-    @app.route('/api/tutors/<int:id>')
-    def show_tutor_api(id):
-        '''
-        Handles API GET requests for getting tutor by ID. Returns JSON.
-        '''
-        tutor = Tutor.query.filter_by(id=id).one_or_none()
-
-        if tutor is None:
-            abort(404)
-
-        return jsonify({
-            'success': True,
-            'tutor': tutor.format()
-        })
-
-    @app.route('/api/tutors/create', methods=['POST'])
-    # @requires_auth('post:tutors')
-    def create_tutor_api():
-
-        body = request.get_json()
-        form = TutorForm(request.form)
-
-        name = form.name.data
-        phone = form.phone.data
-        email = form.email.data
-        classes = form.classes.data
-
-        if ((name == "") or (phone == "")
-                or (email == "")):
-            abort(422)
-
-        tutor = Tutor(
-                name=name, phone=phone,
-                email=email, classes=classes
-        )
-
-        try:
-            tutor.insert()
-
-        except Exception as e:
-            print('ERROR: ', str(e))
-            abort(422)
-
-        flash(f'Tutor:{name} successfully created!')
-
-        return jsonify({
-            'success': True,
-            'tutors': tutor.format()
-        })
-
-    @app.route('/api/tutors/<int:id>/edit', methods=['PATCH'])
-    # @requires_auth('edit:tutors')
-    def edit_tutor_api(*args, **kwargs):
-        '''
-        Handles API PATCH requests for tutors.
-        '''
+    @app.route('/tutors/<int:id>edit', methods=['PATCH'])
+    # @requires_auth('patch:tutors')
+    def edit_tutor_submit(*args, **kwargs):
         id = kwargs['id']
         form = TutorForm()
         tutor = Tutor.query.filter_by(id=id).one_or_none()
@@ -302,174 +178,93 @@ def create_app(test_config=None):
 
         flash(f'{tutor.name}\'s details successfully updated.')
 
-        return jsonify({
+        response = {
             'success': True,
             'tutors': tutor.format()
-        })
+        }
 
-    @app.route('/api/tutors/<int:id>', methods=['DELETE'])
-    # @requires_auth('delete:tutors')
-    def delete_tutor_api(*args, **kwargs):
-        '''
-        Handles API DELETE requests for tutors.
-        '''
-        id = kwargs['id']
+        return jsonify(response)
 
-        tutor = Tutor.query.filter_by(id=id).one_or_none()
 
-        if drink is None:
-            abort(404)
+
+# DELETE
+
+
+# ----------- SUBJECTS ----------
+# CREATE
+
+    @app.route('/subjects/create', methods=['GET'])
+    def create_subject_form():
+        form = SubjectForm()
+        return render_template('/forms/new_subject.html', title='New Subject', form=form)
+
+    @app.route('/subjects/create', methods=['POST'])
+    def add_subject():
+        body = request.get_json()
+        form = SubjectForm(request.form)
+
+        name = form.name.data
+        grade = form.grade.data
 
         try:
-            tutor.delete()
+            subject = Subject(
+                name=name, grade=grade
+            )
+            subject.insert()
+
         except Exception as e:
-            print('EXCEPTION: ', str(e))
+            print('ERROR: ', str(e))
             abort(422)
 
-        flash(f'{tutor.name}\'s details successfully deleted.')
+        flash(f'Gr{grade}: {name} successfully created!')
 
-        return jsonify({
+        response = {
             'success': True,
-            'tutor': tutor.name,
-            'tutor_id': id
-        })
+            'subject': subject.format()
+        }
+        print('response: ', response)
 
-    @app.route('/api/subjects')
-    def get_subjects_api():
-        '''
-        Handles API GET requests for getting all subjects. Returns JSON.
-        '''
-        subjects = SUbject.query.all()
+        return jsonify(response)
+
+
+    @app.route('/subjects')
+    def get_subjects():
+        subjects = Subject.query.order_by(Subject.grade).all()
 
         if len(subjects) == 0:
             abort(404)
 
         subjects = format_subjects(subjects)
 
-        return jsonify({
+        response = {
             'success': True,
             'subjects': subjects
-        })
+        }
+        return jsonify(response)
+        # return render_template('/pages/subjects.html', title='Subjects', subjects=subjects)
 
-    @app.route('/api/subjects/<int:id>')
-    def show_subject_api(id):
+    @app.route('/subjects/<int:id>')
+    def show_subject(id):
         '''
-        Handles API GET requests for getting subjects by id. Returns JSON.
+        Handles GET requests for getting subjects by id
         '''
         subject = Subject.query.filter_by(id=id).one_or_none()
 
         if subject is None:
             abort(404)
 
-        return jsonify({
-            'succes': True,
-            'subject': subject.format()
-        })
-
-    @app.route('/api/subjects/create', methods=['POST'])
-    # @requires_auth('post:subjects')
-    def create_subject_api():
-        '''
-        Handles API POST requests for creating new subject. Returns JSON.
-        '''
-        body = request.get_json()
-        form = SubjectForm(request.form)
-        print('body: ', body)
-        print('form: ', form.__dict__)
-
-        name = form.name.data
-        grade = form.grade.data
-        print('Name: ', name)
-        print('Grade: ', grade)
-        subject = Subject(
-                name=name, grade=grade
-            )
-
-        try:
-            subject.insert()
-            redirect(create_subject_api)
-
-        except Exception as e:
-            print('ERROR: ', str(e))
-            abort(422)
-
-        flash(f'{subject.grade}:{subject.name} successfully created!')
-
-        return jsonify({
+        response = {
             'success': True,
             'subject': subject.format()
-        })
-
-    @app.route('/api/subjects/<int:id>/edit', methods=['PATCH'])
-    # @requires_auth('patch:subjects')
-    def edit_subject_api(*args, **kwargs):
-        '''
-        Handles API PATCH requests for subjects.
-        '''
-        id = kwargs['id']
-        form = SubjectForm()
-        subject = Subject.query.filter_by(id=id).one_or_none()
-
-        if subject is None:
-            abort(404)
-        try:
-            body = request.get_json()
-
-            if 'name' in body:
-                subject.name = form.name.data
-            if 'grade' in body:
-                subject.grade = form.grade.data
+        }
+        return jsonify(response)
+        # return render_template('/pages/show_subjects.html', title='Subjects', subjects=subjects)
 
 
-            subject.insert()
-        except Exception as e:
-            print('EXCEPTION: ', str(e))
-            abort(400)
-
-        flash(f'{subject.grade}:{subject.name} successfully updated.')
-
-        return jsonify({
-            'success': True,
-            'subject': subject.format()
-        })
-
-    @app.route('/api/subjects/<int:id>', methods=['DELETE'])
-    # @requires_auth('delete:subjects')
-    def delete_subject_api(*args, **kwargs):
-        '''
-        Handles API DELETE requests for subjects.
-        '''
-        id = kwargs['id']
-
-        subject = Subject.query.filter_by(id=id).one_or_none()
-
-        if subject is None:
-            abort(404)
-
-        try:
-            subject.delete()
-        except Exception as e:
-            print('EXCEPTION: ', str(e))
-            abort(422)
-
-        flash(f'{subject.grade}:{subject.name} successfully deleted.')
-
-        return jsonify({
-            'success': True,
-            'grade': subject.grade,
-            'subject': subject.name,
-            'subject_id': id
-        })
-
-    @app.route('/api/key')
-    def get_api_key():
-        '''
-        Endpoint for getting API key for curl requests and testing
-        '''
-
-        return render_template('/pages/api_key.html')
+# EDIT
 
 
+# DELETE
 
 
 # -----------------------------------------------------------

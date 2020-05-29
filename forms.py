@@ -41,4 +41,6 @@ class SubjectForm(FlaskForm):
             ('11', '11'),
             ('12', '12')
         ])
-    submit = SubmitField('Submit')
+    # grade = StringField(
+    #     'Grade', [DataRequired()]
+    #     )

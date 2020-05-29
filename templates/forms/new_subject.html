@@ -1,50 +1,63 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="container">
-    <h1>New Subject</h1>
-    <form action="" method="post"  >
-        <h3 class="form-heading">List a new subject</h3>
-        <div class="form-field">
-          <label for="name">Name</label>
-          {{ form.name.label(id="name") }} {{ form.name }}
-        </div>
-        <div class="form-field">
-            <label for="grade">Grade</label>
-            {{ form.grade.label }} {{ form.grade(id="grade") }}
-        </div>
-        <input type="button" id ="createBtn" value="Create Subject" class="btn btn-primary btn-lg btn-block" onclick="submitSubject()">
+    <div class="container">
+        <h1>New Subject</h1>
+        <form action="" method="post">
+            <h3 class="form-heading">List a new subject</h3>
+            <div class="form-group">
+                <label for="name">Name</label>
+                {{ form.name(class_ = 'form-control', id="name", autofocus = true) }}
+            </div>
+            <div class="form-group">
+                <label for="grade">Grade</label>
+                {{ form.grade(class_ = 'form-control', id="grade", autofocus = true) }}
+            </div>
+            <button class="btn btn-primary" id="submit" onclick="submit_input();">Create Subject</button>
+        </form>
+    </div>
 
-    </form>
-</div>
-    <script type="text/javascript">
+    {% endblock %}
 
-        function submitSubject() {
-            let name = document.getElementById("name");
-            let grade = document.getElementById("grade");
+    {% block script %}
 
-            let data = {
-                "name": name,
-                "grade": grade
-            }
-            console.log('Data: ', data)
+    <script>
 
-            fetch(`${window.location.origin}/api/subjects/create`, {
+        function submit_input() {
+
+            var name = document.getElementById("name");
+            var grade = document.getElementById("grade");
+            printf('Name: ', name)
+            var entry = {
+                name: name.value,
+                grade: grade.value
+            };
+
+            fetch(`${window.location.origin}/subjects/create`, {
                 method: 'POST',
-                headers: {
+                body: JSON.stringify(entry),
+                headers: new Headers({
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+                })
             })
                 .then((response) => {
-                    return response.json();
+                    if (response.status !== 200) {
+                        console.log(`Looks like there was a problem. Status code: ${response.status}`);
+                        return;
+                    }
+                    response.json().then(function (data) {
+                        console.log(data);
+                    });
                 })
                 .then((myJson) => {
                     if (myJson['success'] == true) {
                         window.location.href = '/subjects';
                     }
+                })
+                .catch(function (error) {
+                    console.log("Fetch error: " + error);
                 });
-
         }
-
     </script>
-{% endblock %}
+
+    {% endblock %}
