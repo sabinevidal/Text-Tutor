@@ -1,12 +1,12 @@
 # Capstone
-curl http://127.0.0.1:5000/tutors  
+curl http://127.0.0.1:5000/tutors 
 {
-  "success": true, 
+  "success": true,
   "tutors": [
     {
       "classes": [
         {
-          "grade": 10, 
+          "grade": 10,
           "id": 1, 
           "name": "English"
         }, 
@@ -61,7 +61,7 @@ curl http://127.0.0.1:5000/tutors
 }
 
 
-curl http://127.0.0.1:5000/api/tutors/create -X POST -H "Content-Type: application/json" -d '{"name": "Lizzo", "phone": "1231234123", "email": "lizzo@email.com" }'
+curl http://127.0.0.1:5000/api/tutors -X POST -H "Content-Type: application/json" -d '{"name": "Lizzo", "phone": "1231234123", "email": "lizzo@email.com" }'
 
 
 
