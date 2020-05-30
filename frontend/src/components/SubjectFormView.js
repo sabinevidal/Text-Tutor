@@ -15,8 +15,9 @@ class SubjectFormView extends Component {
   submitSubject = (event) => {
     event.preventDefault();
     $.ajax({
-      url: '/subjects',
+      url: '/api/subjects',
       type: "POST",
+      mode: 'CORS',
       dataType: 'json',
       contentType: 'application/json',
       data: JSON.stringify({

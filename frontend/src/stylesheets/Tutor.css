@@ -1,30 +1,30 @@
-.question-view {
+.tutor-view {
   display: flex;
   flex-direction: row;
 }
 
-.categories-list {
+.subjects-list {
   flex-basis: 25%;
   flex-shrink: 2;
 }
 
-.categories-list > form {
+.subjects-list > form {
   width: 60%;
 }
 
-.questions-list {
+.tutor-list {
   flex-basis: 75%;
   text-align: center;
 }
 
-.Question-holder {
+.Tutor-holder {
   padding: 10px 20px;
   border: 2px black solid;
   text-align: left;
   margin: 7px;
 }
 
-.Question-status {
+.Tutor-status {
   display: flex;
   flex-direction: row;
   height: 30px;
@@ -38,7 +38,7 @@
   width: 100%;
 }
 
-.answer-holder {
+/* .answer-holder {
   font-size: 25px;
   height: 25px;
   margin: 5px 0px;
@@ -51,7 +51,7 @@
   color: white;
   padding: 3px 5px;
   margin-left: 0px !important;
-}
+} */
 
 span.page-num {
   margin: 5px;

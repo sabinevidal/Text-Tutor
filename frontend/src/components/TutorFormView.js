@@ -16,7 +16,7 @@ class TutorFormView extends Component {
 
   componentDidMount(){
     $.ajax({
-      url: `/subjects`,
+      url: `/api/subjects`,
       type: "GET",
       success: (result) => {
         this.setState({ subjects: result.subjects })
@@ -33,7 +33,7 @@ class TutorFormView extends Component {
   submitTutor = (event) => {
     event.preventDefault();
     $.ajax({
-      url: '/tutors',
+      url: '/api/tutors',
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
