@@ -55,12 +55,12 @@ class SubjectFormView extends Component {
           <label>
             Grade
             <select name="grade" onChange={this.handleChange}>
-              <option value="1">7</option>
-              <option value="2">8</option>
-              <option value="3">9</option>
-              <option value="4">10</option>
-              <option value="5">11</option>
-              <option value="5">12</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
             </select>
           </label>
           {/* TODO Move this to TUTOR for Classes */}

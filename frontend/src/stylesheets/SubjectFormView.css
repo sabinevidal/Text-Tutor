@@ -5,3 +5,8 @@
 #add-form {
   text-align: center;
 }
+
+.button {
+  width: 15%;
+  align-self: center;
+}

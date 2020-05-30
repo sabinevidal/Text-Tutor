@@ -251,7 +251,7 @@ def create_app(test_config=None):
 
         return jsonify(response)
 
-
+# GET 
     @app.route('/api/subjects')
     def get_subjects():
         subjects = Subject.query.order_by(Subject.grade).all()

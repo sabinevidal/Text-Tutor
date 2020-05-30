@@ -24,8 +24,8 @@ class App extends Component {
           <Route path="/" exact component={SubjectView} />
           <Route path="/addsubject" component={SubjectFormView} />
           <Route path="/addtutor" component={TutorFormView} />
-          <Route path="/tutor" component={TutorView} />
-          <Route path="/subject" component={SubjectView} />
+          <Route path="/tutors" component={TutorView} />
+          <Route path="/subjects" component={SubjectView} />
         </Switch>
       </Router>
     </div>
