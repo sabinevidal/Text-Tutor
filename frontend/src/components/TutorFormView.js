@@ -10,7 +10,8 @@ class TutorFormView extends Component {
       name: "",
       phone: null,
       email: "",
-      classes: {}
+      classes: {},
+      subjects: {}
     }
   }
 
@@ -58,6 +59,27 @@ class TutorFormView extends Component {
     })
   }
 
+  getSubjects = (input) => {
+    return this.props.subjects
+      .then((response) => {
+        return response.json();
+      }).then((json) => {
+        return { objects: json };
+      });
+  }
+
+  // renderFields() {
+  //   return _.map(formField, ({ label, name}) => (
+  //     <Field
+  //       key={id}
+  //       component={SubjectView}
+  //       type="text"
+  //       label={label}
+  //       name={name}
+  //       />
+  //   ));
+  // }
+
   handleChange = (event) => {
     let name = event.target.name;
     let value = event.target.value;
@@ -88,8 +110,8 @@ class TutorFormView extends Component {
           </label>
           <label>
             Subjects
-            <select multiple={true} name="classes" onChange={this.handleChange}>
-              {Object.keys(this.state.subjects).map(id => {
+            <select name="classes" onChange={this.handleChange}>
+              {Object.values(this.state.subjects).map(id => {
                   return (
                     <option key={id} value={id}>{this.state.subjects[id]}</option>
                   )
