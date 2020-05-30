@@ -371,10 +371,15 @@ def create_app(test_config=None):
         try:
             selection = Tutor.query.filter_by(subject=subject.id).all()
 
+            paginated = paginate_tutors(request, selection)
+
+            current_sub = subject.format()
+
             return jsonify({
                 'success': True,
                 'tutors': selection,
                 'total_tutors': len(Tutor.query.all()),
+                'current_subject': current_sub
             })
         except:
             abort(400)

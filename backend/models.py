@@ -130,6 +130,8 @@ class Subject(db.Model):
             'grade': self.grade,
             'name': self.name
         }
+    # def short(self):
+    #     short_sub = [{'grade': r['grade'], 'name': r['name']}]
 
 
 class TutorsSubjects(db.Model):
