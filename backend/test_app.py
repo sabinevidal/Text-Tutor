@@ -45,7 +45,23 @@ class TextTutorTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    # creates test plant
+    def test_paginate_tutors(self):
+        """Tests tutor pagination success"""
+        response = self.client().get('/tutors')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+
+    def test_404_request_beyond_valid_page(self):
+        """ Tests error if user tries to access nonexistent page """
+        response = self.client().get('/tutors?page=1000')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resource not found')
+
     def test_get_tutors(self):
         """ Tests success of loading tutors"""
         response = self.client().get('/api/tutors',

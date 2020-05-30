@@ -9,6 +9,20 @@ from sqlalchemy.dialects.postgresql import JSON
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
+TUTORS_PER_PAGE = 10
+
+# paginating Tutors
+def paginate_tutors(request, selection):
+    page = request.args.get('page', 1, type=int)
+    start = (page - 1) * TUTORS_PER_PAGE
+    end = start + TUTORS_PER_PAGE
+
+    tutors = [tutor.format() for tutor in tutors]
+    current_tutors = tutors[start:end]
+
+    return current_tutors
+
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
