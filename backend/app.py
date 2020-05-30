@@ -178,7 +178,7 @@ def create_app(test_config=None):
             tutor.insert()
         except Exception as e:
             print('EXCEPTION: ', str(e))
-            abort(400)
+            abort(422)
 
         # flash(f'{tutor.name}\'s details successfully updated.')
 
@@ -282,7 +282,7 @@ def create_app(test_config=None):
         return jsonify(response)
 
 # EDIT
-  @app.route('/api/subjects/<int:id>', methods=['PATCH'])
+    @app.route('/api/subjects/<int:id>', methods=['PATCH'])
     # @requires_auth('patch:tutors')
     def edit_subject(*args, **kwargs):
         '''
@@ -306,7 +306,7 @@ def create_app(test_config=None):
             subject.insert()
         except Exception as e:
             print('EXCEPTION: ', str(e))
-            abort(400)
+            abort(422)
 
         # flash(f'{subject.name}\'s details successfully updated.')
 
