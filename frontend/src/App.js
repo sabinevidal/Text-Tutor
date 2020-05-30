@@ -7,10 +7,11 @@ import {
 
 // import logo from './logo.svg';
 import './stylesheets/App.css';
-import FormView from './components/FormView';
-import QuestionView from './components/QuestionView';
+import SubjectFormView from './components/SubjectFormView';
+import TutorFormView from './components/TutorFormView';
+import TutorView from './components/TutorView';
 import Header from './components/Header';
-import QuizView from './components/QuizView';
+import SubjectView from './components/SubjectView';
 
 
 class App extends Component {
@@ -20,10 +21,11 @@ class App extends Component {
       <Header path />
       <Router>
         <Switch>
-          <Route path="/" exact component={QuestionView} />
-          <Route path="/add" component={FormView} />
-          <Route path="/play" component={QuizView} />
-          <Route component={QuestionView} />
+          <Route path="/" exact component={SubjectView} />
+          <Route path="/addsubject" component={SubjectFormView} />
+          <Route path="/addtutor" component={TutorFormView} />
+          <Route path="/tutor" component={TutorView} />
+          <Route path="/subject" component={SubjectView} />
         </Switch>
       </Router>
     </div>

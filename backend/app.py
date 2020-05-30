@@ -53,20 +53,9 @@ def create_app(test_config=None):
 
 # TODO: index home page
     @app.route('/')
-    @app.route('/index')
     def index():
-        user = {'username': 'Sabine'}
-        posts = [
-            {
-                'tutor': {'name': 'John'},
-                'subjects': 'Gr8 Maths'
-            },
-            {
-                'tutor': {'name': 'Susan'},
-                'subjects': 'Gr9 Science, gr10 Maths'
-            }
-        ]
-        return render_template('index.html', title='Home!', user=user, posts=posts)
+
+        return render_template('index.html', title='Home!')
 
 # ----------- TUTORS ----------
 
