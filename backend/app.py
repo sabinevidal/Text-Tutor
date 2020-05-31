@@ -207,7 +207,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': True,
             'tutor': tutor.name,
-            'tutor_id': id
+            'deleted_id': id
         })
 
 
@@ -295,7 +295,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': True,
             'subject': subject.name,
-            'subject_id': id
+            'deleted_id': id
         })
 
 # -----------------------------------------------------------
