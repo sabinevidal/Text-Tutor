@@ -56,7 +56,7 @@ npm start
 ## Database Setup
 With Postgres running, restore a database using the trivia.psql file provided. From the backend folder in terminal run:
 ```bash
-psql text-tutor < text-tutor.psql
+psql text-tutor < text-tutor.db
 ```
 
 ## Running the server
@@ -77,7 +77,7 @@ To run the tests, run
 dropdb texttutor_test
 createdb texttutor_test
 source setup_test.sh
-psql texttutor_test < text-tutor.psql
+psql texttutor_test < text-tutor.db
 python test_app.py
 ```
 
