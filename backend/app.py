@@ -126,36 +126,6 @@ def create_app(test_config=None):
 
         return jsonify(response)
 
-    # EDIT
-    # @app.route('/api/tutors/<int:id>', methods=['GET'])
-    # # @login_required
-    # # @requires_auth('patch:tutors')
-    # def edit_tutor(*args, **kwargs):
-    #     id = kwargs['id']
-    #     tutor = Tutor.query.filter_by(id=id).one_or_none()
-
-    #     tutor={
-    #         "id": tutor.id,
-    #         "name": tutor.name,
-    #         "phone": tutor.phone,
-    #         "email": tutor.email,
-    #         "classes": tutor.classes
-    #     }
-    #     # form placeholders
-    #     # form.name.process_data(tutor['name'])
-    #     # form.phone.process_data(tutor['phone'])
-    #     # form.email.process_data(tutor['email'])
-    #     # form.classes.process_data(tutor['classes'])
-
-    #     response = {
-    #         'success': True,
-    #         'tutor': tutor.format()
-    #     }
-
-    #     return jsonify(response)
-
-
-
     @app.route('/api/tutors/<int:id>', methods=['PATCH'])
     # @requires_auth('patch:tutors')
     def edit_tutor(*args, **kwargs):
@@ -249,7 +219,12 @@ def create_app(test_config=None):
             'subject': subject.format()
         }
 
-        return jsonify(response)
+        return jsonify({
+            'success': True,
+            'name': subject.name,
+            'grade': subject.grade,
+            'id': subject.id
+        })
 
 # GET 
     @app.route('/api/subjects')

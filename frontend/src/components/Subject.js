@@ -1,14 +1,29 @@
 import React, { Component } from 'react';
 import '../stylesheets/Subject.css';
+import $ from 'jquery';
 
 class Subject extends Component {
-  // constructor(){
-  //   super();
-  //   this.state = {
-  //     visibleDetails: false
-  //   }
-  // }
+  constructor(){
+    super();
+    this.state = {
+      visibleDetails: false
+    }
+  }
 
+  componentDidMount(){
+    $.ajax({
+      url: `/api/subjects`,
+      type: "GET",
+      success: (result) => {
+        this.setState({ subjects: result.subjects })
+        return;
+      },
+      error: (error) => {
+        alert('Unable to load subjects. Please try your request again')
+        return;
+      }
+    })
+  }
   // flipVisibility() {
   //   this.setState({visibleAnswer: !this.state.visibleAnswer});
   // }

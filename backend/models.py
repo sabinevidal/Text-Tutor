@@ -69,7 +69,7 @@ class Tutor(db.Model):
     #         'gr_subjects': self.gr_subjects
     #     }
 
-    def __init__(self, name, email, phone, classes):
+    def __init__(self, name, email, phone, classes = []):
         self.name = name
         self.email = email
         self.phone = phone
