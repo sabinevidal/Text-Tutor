@@ -52,11 +52,11 @@ def create_app(test_config=None):
 # ROUTES
 # ----------------------------------
 
-# TODO: index home page
-    @app.route('/')
-    def index():
+# # TODO: FRONTEND index home page
+#     @app.route('/')
+#     def index():
 
-        return render_template('index.html', title='Home!')
+#         return render_template('index.html', title='Home!')
 
 # ----------- TUTORS ----------
 
@@ -80,7 +80,7 @@ def create_app(test_config=None):
 
     @app.route('/api/tutors/<int:id>')
     @requires_auth('get:tutor')
-    def show_tutor(id):
+    def show_tutor(jwt):
         '''
         Handles GET requests for tutor by id.
         '''
@@ -98,7 +98,7 @@ def create_app(test_config=None):
 # CREATE
     @app.route('/api/tutors', methods=['POST'])
     @requires_auth('post:tutor')
-    def add_tutor():
+    def add_tutor(jwt):
         '''
         Handles POST requests for creating a tutor.
         '''
@@ -213,7 +213,7 @@ def create_app(test_config=None):
 
     @app.route('/api/subjects', methods=['POST'])
     @requires_auth('post:subject')
-    def add_subject():
+    def add_subject(jwt):
         body = request.get_json()
         print('body: ', body)
 
@@ -256,7 +256,7 @@ def create_app(test_config=None):
 
     @app.route('/api/subjects/<int:id>')
     @requires_auth('get:subject')
-    def show_subject(id):
+    def show_subject(jwt):
         '''
         Handles GET requests for getting subjects by id
         '''
@@ -333,17 +333,17 @@ def create_app(test_config=None):
             "message": "internal server error"
         }), 422
 
-    # @app.errorhandler(AuthError)
-    # def handle_auth_error(ex):
-    #     '''
-    #     Error handling for AuthError
-    #     '''
-    #     message = ex.error['description']
-    #     response = jsonify(ex.error)
-    #     response.status_code = ex.status_code
-    #     print('AUTH ERROR: ', response.get_data(as_text=True))
-    #     flash(f'{message} Please login.')
-    #     return redirect('/')
+    @app.errorhandler(AuthError)
+    def handle_auth_error(ex):
+        '''
+        Error handling for AuthError
+        '''
+        message = ex.error['description']
+        response = jsonify(ex.error)
+        response.status_code = ex.status_code
+        print('AUTH ERROR: ', response.get_data(as_text=True))
+        flash(f'{message} Please login.')
+        return redirect('/')
 
     return app
 
