@@ -3,9 +3,10 @@ import json
 from flask import Flask, request, redirect, abort, jsonify, render_template, flash, session, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from sqlalchemy.dialects.postgresql import JSON
 
 from models import *
-from sqlalchemy.dialects.postgresql import JSON
+from auth.auth import AuthError, requires_auth
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -71,12 +72,6 @@ def create_app(test_config=None):
 
         tutor_list = list(map(Tutor.format, tutors))
 
-        # classes_dict = {}
-        # for subject in classes:
-        #     classes_dict[subject.id]
-        #     tutor_subjects = add_class(subject)
-        #     tutor.classes.append(tutor_subjects)
-
         response = {
             'success': True,
             'tutors': tutor_list
@@ -84,6 +79,7 @@ def create_app(test_config=None):
         return jsonify(response)
 
     @app.route('/api/tutors/<int:id>')
+    @requires_auth('get:tutor')
     def show_tutor(id):
         '''
         Handles GET requests for tutor by id.
@@ -101,6 +97,7 @@ def create_app(test_config=None):
 
 # CREATE
     @app.route('/api/tutors', methods=['POST'])
+    @requires_auth('post:tutor')
     def add_tutor():
         '''
         Handles POST requests for creating a tutor.
@@ -139,7 +136,7 @@ def create_app(test_config=None):
         return new_class
 
     @app.route('/api/tutors/<int:id>', methods=['PATCH'])
-    # @requires_auth('patch:tutors')
+    @requires_auth('patch:tutor') 
     def edit_tutor(*args, **kwargs):
         id = kwargs['id']
 
@@ -184,7 +181,7 @@ def create_app(test_config=None):
 
 # DELETE
     @app.route('/api/tutors/<int:id>', methods=['DELETE'])
-    # @requires_auth('delete:tutors')
+    @requires_auth('delete:tutor')
     def delete_tutor(*args, **kwargs):
         '''
         Handles API DELETE requests for tutors.
@@ -215,6 +212,7 @@ def create_app(test_config=None):
 # CREATE
 
     @app.route('/api/subjects', methods=['POST'])
+    @requires_auth('post:subject')
     def add_subject():
         body = request.get_json()
         print('body: ', body)
@@ -257,6 +255,7 @@ def create_app(test_config=None):
 
 
     @app.route('/api/subjects/<int:id>')
+    @requires_auth('get:subject')
     def show_subject(id):
         '''
         Handles GET requests for getting subjects by id
@@ -274,7 +273,7 @@ def create_app(test_config=None):
 
 # DELETE
     @app.route('/api/subjects/<int:id>', methods=['DELETE'])
-    # @requires_auth('delete:tutors')
+    @requires_auth('delete:subject')
     def delete_subject(*args, **kwargs):
         '''
         Handles API DELETE requests for subjects.
