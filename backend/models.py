@@ -42,7 +42,7 @@ def db_drop_and_create_all():
 
 #format tutor's subjects
 def format_classes(classes):
-    return [Subject.format() for Subject in classes]
+    return [subject.format() for subject in classes]
 
 def format_tutors(tutors):
     return [tutor.format() for tutor in tutors]
@@ -60,13 +60,6 @@ class Tutor(db.Model):
     phone = Column(String, nullable=False)
 
     classes = relationship('Subject', secondary="tutor_subjects", backref=backref('tutors', lazy=True))
-
-    # def short(self):
-    #     return {
-    #         'id': self.id,
-    #         'name': self.name,
-    #         'gr_subjects': self.gr_subjects
-    #     }
 
     def __init__(self, name, email, phone, classes = []):
         self.name = name

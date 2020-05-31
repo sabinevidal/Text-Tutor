@@ -69,9 +69,17 @@ def create_app(test_config=None):
         if len(tutors) == 0:
             abort(404)
 
+        tutor_list = list(map(Tutor.format, tutors))
+
+        # classes_dict = {}
+        # for subject in classes:
+        #     classes_dict[subject.id]
+        #     tutor_subjects = add_class(subject)
+        #     tutor.classes.append(tutor_subjects)
+
         response = {
             'success': True,
-            'tutors': tutors
+            'tutors': tutor_list
         }
         return jsonify(response)
 
@@ -85,11 +93,10 @@ def create_app(test_config=None):
         if tutor is None:
             abort(404)
 
-        response = {
+        return jsonify({
             'success': True,
             'tutor': tutor.format()
-        }
-        return jsonify(response)
+        })
 
 
 # CREATE
@@ -105,25 +112,20 @@ def create_app(test_config=None):
         email = body.get('email')
         classes = body.get('classes')
 
-        # try:
-        tutor = Tutor(
-            name=name, phone=phone,
-            email=email
-        )
+        try:
+            tutor = Tutor(
+                name=name, phone=phone,
+                email=email
+            )
 
+            for subject in classes:
+                tutor_subjects = add_class(subject)
+                tutor.classes.append(tutor_subjects)
+            tutor.insert()
 
-        print('tutor: ', tutor)
-        for subject in classes:
-            tutor_subjects = add_class(subject)
-            print("tutorsubs: ", tutor_subjects)
-            tutor.classes.append(tutor_subjects)
-        tutor.insert()
-
-        # except Exception as e:
-        #     print('ERROR: ', str(e))
-        #     abort(422)
-
-        # flash(f'Tutor:{new_name} successfully created!')
+        except Exception as e:
+            print('ERROR: ', str(e))
+            abort(422)
 
         response = {
             'success': True,
@@ -133,10 +135,6 @@ def create_app(test_config=None):
         return jsonify(response)
 
     def add_class(subject):
-        # existing_class = Subject.query.filter(Subject.name == subject['name']).one_or_none()
-        # if existing_class is not None:
-        #     return existing_class
-        # else:
         new_class = Subject(name=subject['name'],grade=subject['grade'])
         return new_class
 
@@ -161,13 +159,16 @@ def create_app(test_config=None):
         if 'classes' in body:
             tutor.classes = body['classes']
 
+        for subject in classes:
+            tutor_subjects = add_class(subject)
+            print("tutorsubs: ", tutor_subjects)
+            tutor.classes.append(tutor_subjects)
+
         try:
             tutor.insert()
         except Exception as e:
             print('EXCEPTION: ', str(e))
             abort(422)
-
-        # flash(f'{tutor.name}\'s details successfully updated.')
 
         response = {
             'success': True,
@@ -233,12 +234,7 @@ def create_app(test_config=None):
             'subject': subject.format()
         }
 
-        return jsonify({
-            'success': True,
-            'name': subject.name,
-            'grade': subject.grade,
-            'id': subject.id
-        })
+        return jsonify(response)
 
 # GET 
     @app.route('/api/subjects')
@@ -273,44 +269,6 @@ def create_app(test_config=None):
         }
         return jsonify(response)
 
-# EDIT
-    @app.route('/api/subjects/<int:id>', methods=['PATCH'])
-    # @requires_auth('patch:tutors')
-    def edit_subject(*args, **kwargs):
-        '''
-        Handles PATCH requests for subjects.
-        '''
-        id = kwargs['id']
-
-        subject = Subject.query.filter_by(id=id).one_or_none()
-
-        if subject is None:
-            abort(404)
-
-        body = request.get_json()
-
-        if 'name' in body:
-            subject.name = body['name']
-        if 'grade' in body:
-            subject.grade = body['grade']
-
-        try:
-            subject.insert()
-        except Exception as e:
-            print('EXCEPTION: ', str(e))
-            abort(422)
-
-        # flash(f'{subject.name}\'s details successfully updated.')
-
-        response = {
-            'success': True,
-            'subjects': subject.format()
-        }
-
-        return jsonify(response)
-
-
-
 # DELETE
     @app.route('/api/subjects/<int:id>', methods=['DELETE'])
     # @requires_auth('delete:tutors')
@@ -331,39 +289,11 @@ def create_app(test_config=None):
             print('EXCEPTION: ', str(e))
             abort(422)
 
-        # flash(f'{subject.name}\'s details successfully deleted.')
-
         return jsonify({
             'success': True,
             'subject': subject.name,
             'subject_id': id
         })
-
-    @app.route('/api/subjects/<int:id>/tutors')
-    def get_subject_tutors(id):
-        '''
-        Handles GET requests for getting tutors based on subjects
-        '''
-        subject = Subject.query.filter_by(id=id).one_or_none()
-
-        try:
-            selection = Tutor.query.filter_by(subject=subject.id).all()
-
-            paginated = paginate_tutors(request, selection)
-
-            current_sub = subject.format()
-
-            return jsonify({
-                'success': True,
-                'tutors': selection,
-                'total_tutors': len(Tutor.query.all()),
-                'current_subject': current_sub
-            })
-        except:
-            abort(400)
-
-
-
 
 # -----------------------------------------------------------
 # Error Handlers

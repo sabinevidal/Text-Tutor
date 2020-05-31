@@ -137,23 +137,6 @@ class TextTutorTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['tutor']['email'], 'patch@email.com')
 
-    def test_edit_subject(self):
-        """Tests PATCH subject """
-        patched_subject = {
-            'grade': 15
-        }
-
-        response = self.client().patch(
-                '/api/subjects/765432',
-                json=patched_subject,
-                headers=self.headers_private)
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertEqual(data['subject']['grade'], 15)
-
-
     def test_delete_tutor(self):
         """ Tests question delete success """
         delete_tutor = Tutor(
@@ -227,21 +210,6 @@ class TextTutorTestCase(unittest.TestCase):
         response = self.client().patch(
                 '/api/tutors/654321',
                 json=patched_tutor,
-                headers=self.headers_private)
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 422)
-        self.assertFalse(data['success'])
-
-     def test_422_edit_subject(self):
-        """test failure of patch subject error 422"""
-        patched_subject = {
-            'grade': 'grade'
-        }
-
-        response = self.client().patch(
-                '/api/subjects/765432',
-                json=patched_subject,
                 headers=self.headers_private)
         data = json.loads(response.data)
 
