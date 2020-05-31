@@ -15,7 +15,7 @@ This is my capstone project for the [Udacity Full Stack Web Developer Nanodegree
     * Configure Role Based Authentication and roles-based access control (RBAC) in a Flask application utilizing Auth0
     * Decode and verify JWTs from Authorization headers
 * Deployment
-    * API is [hosted live via Heroku]()
+    * API is [hosted live via Heroku](http://text-tutor-2020.herokuapp.com/)
 * Optional
     * Design and create a frontend which works with the API and redirects the user to Auth0 for login.
     * Used React.js for frontend
@@ -66,7 +66,7 @@ From within the `backend` directory first ensure you are working using your crea
 To run the server, execute:
 
 ```bash
-export FLASK_APP=flaskr
+export FLASK_APP=app.py
 export FLASK_ENV=development
 flask run
 ```
@@ -76,6 +76,7 @@ To run the tests, run
 ```
 dropdb texttutor_test
 createdb texttutor_test
+source setup_test.sh
 psql texttutor_test < text-tutor.psql
 python test_app.py
 ```
@@ -84,8 +85,10 @@ python test_app.py
 
 ### Getting Started
 #### !!TODO!!
-Base URL: Currently this application is only hosted locally. The backend is hosted at http://127.0.0.1:5000/
-Authentication: This version does not require authentication or API keys.
+Base URL: Currently this application is only hosted locally. The backend is hosted at http://text-tutor-2020.herokuapp.com/
+Authentication:
+In order to use the API users need to be authenticated. Users can either have a student, tutor or a admin role. An overview of the API can be found below as well. There's also a [Postman Collection](https://github.com/sabinevidal/text-tutor/text-tutor.postman_collection.json) provided.
+
 
 ### Error Handling
 
@@ -97,47 +100,55 @@ There are four types of errors the API will return`;
 - 500 - internal server error
 
 ## API
-In order to use the API users need to be authenticated. Users can either have a athlete or a coach role. An overview of the API can be found below as well. We've also provided a Postman Collection.
 
 ### Roles and Permissions
 
 #### Admin
 
-Admin can retrieve and manage all information about tutors and subjects
+Admin have the following permissions:
 
-They have the following permissions:
+* get:subject
+* get:tutor
+* post:subject
+* post:tutor
+* patch:tutor
+* delete:subject
+* delete:tutor
 
-* get:subjects
-* get:all_stats
+email: admin@email.com
+password: AdminUser123
+user_id: 5ed415408c9b000c08c0e10c
 
 #### Tutor
 
-Athletes can create an athlete and manage their stats through CRUD operations.
+Tutors have the following permissions:
 
-They have the following permissions:
+* post:tutor
+* post:subject
+* patch:tutor
+* delete:tutor
+* get:tutor
 
-post:athlete
-post:stat
-patch:stat
-delete:stat
+email: tutor@email.com
+password: TutorUser123
+user_id: 5ed417832176180c0cfdc1cd
 
 #### Student
 
-Students can create an athlete and manage their stats through CRUD operations.
+Students have the following permissions:
 
-They have the following permissions:
+* get:tutor
 
-post:athlete
-post:stat
-patch:stat
-delete:stat
+email: student@email.com
+password: StudentUser123
+user_id: 5ed417e97308300c1ea34e28
 
 ### Endpoints
 
 #### GET '/tutors'
 - Returns a list of tutors with their details and associated classes.
 - Does not require authorisation
-- Sample: `curl http://127.0.0.1:5000/api/tutors -X GET -H "Content-Type: application/json"`
+- Sample: `curl http://text-tutor-2020.herokuapp.com/api/tutors -X GET -H "Content-Type: application/json"`
 ```
 {
   "success": true,
@@ -202,7 +213,9 @@ delete:stat
 #### GET '/tutors/<int:id>'
 - Returns a tutor using URL paramteres to specify its id.
 - Requires admin, teacher and student account authorisation
-- Sample: `curl http://127.0.0.1:5000/api/tutors/<int:id> -X GET -H 'Authorization: Bearer <INSERT_YOUR_TOKEN>' `
+  - Using active Public or Admin JWT before request, execute
+    export ADMIN_ROLE_TOKEN=<active_admin_jwt>
+- Sample: `curl http://text-tutor-2020.herokuapp.com/api/tutors/<int:id> -X GET -H "Authorization: Bearer $ADMIN_ROLE_TOKEN"' `
 ``` 
 {
   "success": true,
@@ -230,7 +243,7 @@ delete:stat
 #### GET '/subjects'
 - Returns a list of subjects.
 - Does not require authorisation
-- Sample: `curl http://127.0.0.1:5000/api/subjects `
+- Sample: `curl http://text-tutor-2020.herokuapp.com/api/subjects `
 ```
 {
   "subjects": [
@@ -257,8 +270,9 @@ delete:stat
 #### GET '/subjects/<int:id>'
 - Returns a subject using URL paramteres to specify its id.
 - Requires admin account authorisation
-  - Execute export ADMIN_ROLE_TOKEN=<active_admin_jwt> with active Admin JWT before request.
-- Sample: `curl http://127.0.0.1:5000/api/tutors/<int:id> -X GET -H 'Authorization: Bearer <INSERT_YOUR_TOKEN>' `
+  - Using active Public or Admin JWT before request, execute
+    export ADMIN_ROLE_TOKEN=<active_admin_jwt>
+- Sample: `curl http://text-tutor-2020.herokuapp.com/api/tutors/<int:id> -X GET -H "Authorization: Bearer $ADMIN_ROLE_TOKEN"`
 ```
 {
   "subject": {
@@ -273,7 +287,9 @@ delete:stat
 #### POST '/tutors'
 - Creates a new tutor using JSON request parameters in the database
 - Requires admin and tutor account authorisation
-- Sample: `curl http://127.0.0.1:5000/api/tutors -X POST -H "Content-Type: application/json" -d '{"classes": [{"grade": 10,"id": 4,"name":"English"},{"grade": 8,"id": 7,"name": "English"}],"email": "bill@email.com","name": "Bill","phone": "12323445364"}'`
+  - Using active Public or Admin JWT before request, execute
+    export ADMIN_ROLE_TOKEN=<active_admin_jwt>
+- Sample: `curl http://text-tutor-2020.herokuapp.com/api/tutors -X POST -H "Content-Type: application/json" -d '{"classes": [{"grade": 10,"id": 4,"name":"English"},{"grade": 8,"id": 7,"name": "English"}],"email": "bill@email.com","name": "Bill","phone": "12323445364"} -H "Authorization: Bearer $ADMIN_ROLE_TOKEN"'`
 - Created tutor:
 ```
 {
@@ -322,7 +338,9 @@ delete:stat
 #### POST '/subjects'
 - Creates a new subject using JSON request parameters in the database
 - Requires admin and tutor account authorisation
-- Sample: `curl http://127.0.0.1:5000/api/subjects -X POST -H "Content-Type: application/json" -d '{"name": "English", "grade": "8"}'`
+  - Using active Public or Admin JWT before request, execute
+    export ADMIN_ROLE_TOKEN=<active_admin_jwt>
+- Sample: `curl http://text-tutor-2020.herokuapp.com/api/subjects -X POST -H "Content-Type: application/json" -d '{"name": "English", "grade": "8"} -H "Authorization: Bearer $ADMIN_ROLE_TOKEN"'`
 - Created subject:
 ```
 {
@@ -347,10 +365,8 @@ delete:stat
 - Updates an existing tutor profile using URL parameters specifying tutor id.
 - Requires admin and tutor account authorisation
   - Using active Public or Admin JWT before request, execute
-    export PUBLIC_ROLE_TOKEN=<active_public_jwt>
-    or
     export ADMIN_ROLE_TOKEN=<active_admin_jwt>
-- Sample: `curl http://127.0.0.1:5000/api/tutors/1 -X PATCH -H 'Authorization: Bearer <INSERT_YOUR_TOKEN>' -H 'Content-Type: application/json' -d '{"email":"patch@email.com", "classes": [{"grade": 10, "id": 9, "name": "English"}]}'`
+- Sample: `curl http://text-tutor-2020.herokuapp.com/api/tutors/1 -X PATCH -H 'Authorization: Bearer <INSERT_YOUR_TOKEN>' -H 'Content-Type: application/json' -d '{"email":"patch@email.com", "classes": [{"grade": 10, "id": 9, "name": "English"}]} -H "Authorization: Bearer $ADMIN_ROLE_TOKEN"'`
 ```
 {
   "success": true,
@@ -379,15 +395,13 @@ delete:stat
 - Deletes an existing tutor profile using URL parameters specifying tutor id.
 - Requires admin and tutor account authorisation
   - Using active Public or Admin JWT before request, execute
-    export PUBLIC_ROLE_TOKEN=<active_public_jwt>
-    or
     export ADMIN_ROLE_TOKEN=<active_admin_jwt>
-- Sample: `curl http://127.0.0.1:5000/api/tutors/1 -X DELETE -H 'Authorization: Bearer <INSERT_YOUR_TOKEN>'`
+- Sample: `curl http://text-tutor-2020.herokuapp.com/api/tutors/1 -X DELETE -H "Authorization: Bearer $ADMIN_ROLE_TOKEN"`
 ```
 {
   "success": true,
   "tutor": "Bob",
-  "tutor_id": 1
+  "deleted_id": 1
 }
 ```
 
@@ -396,7 +410,11 @@ delete:stat
 - Requires admin account authorisation
   - Using active Public or Admin JWT before request, execute
     export ADMIN_ROLE_TOKEN=<active_admin_jwt>
-- Sample: `curl http://127.0.0.1:5000/api/subjects/1 -X DELETE -H 'Authorization: Bearer <INSERT_YOUR_TOKEN>'`
+- Sample: `curl http://text-tutor-2020.herokuapp.com/api/subjects/1 -X DELETE -H "Authorization: Bearer $ADMIN_ROLE_TOKEN"`
 ```
-
+{
+  "subject": "English",
+  "deleted_id": 2,
+  "success": true
+}
 ```
