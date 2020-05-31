@@ -8,15 +8,9 @@ from models import *
 
 # PRIVATE USER GENERATED FOR TESTING PURPOSES ONLY
 # HAS ALL PERMISSIONS:
-# "get:tutors", "get:subjects",
+# "get:tutors", "get:subjects", "delete:tutor",
 # "post:tutor", "post:subject", "patch:tutor", "delete:tutor"
-STUDENT_TOKEN = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlhlbkxVTVBwNkFQR3FFNGVKeDVOaiJ9.eyJpc3MiOiJodHRwczovL2Rldi1mYXY1ZHA0ZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWU5OGI4YzIwZmI2YzYwYzgzYTQxZGJmIiwiYXVkIjoicnVubmVycyIsImlhdCI6MTU4NzIyODAyNSwiZXhwIjoxNTg3MzE0NDI1LCJhenAiOiJVQ0hrank2RlJDb2lLU1R5bWpJQUtrTVFHckVvUjl1YyIsInNjb3BlIjoiIiwicGVybWlzc2lvbnMiOlsiZGVsZXRlOnN0YXQiLCJnZXQ6YWxsX2F0aGxldGVzIiwiZ2V0OmFsbF9zdGF0cyIsInBhdGNoOnN0YXQiLCJwb3N0OmF0aGxldGUiLCJwb3N0OnN0YXQiXX0.cWdbRVe2khLIKwQSDyrJ3wRlnPkr93eh9LMHxahTnd8DVCP2RnS4A5oJL37erYFK14BLfuKYdpmLnSLanR6yhTqlT0bzMObhEV45NmhaAZ2aAF7HA3cfdcNJ1TRIwIGd7KabP0Qi3_SFKHClDu-FFFWH1XFTiB81I4BCeSIs0zpnpXirYjuZY2maW2J8siO0tvWZUqWnJ0psUtt9B7hP39KGayVFiWFYCmgwcszWAkHUPqNZKWJAGj3YtytcxDpIR2xnQ7Q0H89Hs2yskeY-zKJNGdUxxmbLIR0BQ3FH-5c8NvAa70Cu891jhglTvyGPekNj3M11Y6q_mcz35rvmcw'
-
-# PUBLIC USER GENERATED FOR TESTING PURPOSED ONLY
-# HAS NO PERMISSIONS
-TUTOR_TOKEN = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlhlbkxVTVBwNkFQR3FFNGVKeDVOaiJ9.eyJpc3MiOiJodHRwczovL2Rldi1mYXY1ZHA0ZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWU5OWNkYjg5NjA3MTEwYzllY2U3ZDNjIiwiYXVkIjoicnVubmVycyIsImlhdCI6MTU4NzIyODA4MiwiZXhwIjoxNTg3MzE0NDgyLCJhenAiOiJVQ0hrank2RlJDb2lLU1R5bWpJQUtrTVFHckVvUjl1YyIsInNjb3BlIjoiIiwicGVybWlzc2lvbnMiOltdfQ.UMyFC77QER9CcZYr3HtruNHnSJUw7ps496sa1fjHpqtpLdxB00gpUjuM-42dJeYUldrpMU30OVeqSqGQr48MdsX_qsN7wZoAM80QbT_zTf2PwCtQ2B_NhqcSMXvX76HX8FsCQATr5AkpSi9-DmRdHuPtJwdIJ9Qt03FY69Kp5rCrTGsevdJIleM8pmEemHa8sKnI6JyOsS0OOwRY234q7lBwCM_u72_UwQib5sDyYB3tfLY5n87-dv5O85KXRZl7_JSJtgiPS5hSt-Lm_9Ta7Xhl5rP4rm6Afjsc47mQQAb5WpD5XmyDdsqEnRLQ_E1UHREZQv5IE2yHXXYimGG8MA'
-
-ADMIN_TOKEN = os.environ.get('ADMIN_ROLE_TOKEN')
+ADMIN_TOKEN = os.environ.get('ADMIN_TOKEN')
 
 class TextTutorTestCase(unittest.TestCase):
     """This class represents the text tutor test case"""
@@ -29,12 +23,9 @@ class TextTutorTestCase(unittest.TestCase):
         self.database_path = "postgres://{}/{}".format(
             'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
-        self.headers_private = {
+        self.headers_admin = {
             'Content-Type': 'application/json',
-            'Authorization': PRIVATE_TOKEN}
-        self.headers_public = {
-            'Content-Type': 'application/json',
-            'Authorization': PUBLIC_TOKEN}
+            'Authorization': ADMIN_TOKEN}
 
 
         # binds the app to the current context
@@ -65,8 +56,7 @@ class TextTutorTestCase(unittest.TestCase):
 
     def test_get_tutors(self):
         """ Tests success of loading tutors"""
-        response = self.client().get('/api/tutors',
-                headers=self.headers_public)
+        response = self.client().get('/api/tutors')
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -75,7 +65,7 @@ class TextTutorTestCase(unittest.TestCase):
     def test_get_subjects(self):
         """Tests success of loading tutors"""
         response = self.client().get('/api/subjects',
-                headers=self.headers_public)
+                headers=self.headers_admin)
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -90,13 +80,9 @@ class TextTutorTestCase(unittest.TestCase):
             'email': 'test@email.com'
             # 'classes': 'classes' TODO
         }
-        headers = {
-            'Authorization': f'Bearer {self.token}',
-            'Content-Type': 'application/json'
-        }
         response = self.client().post('/api/tutors',
                 data=json.dumps(test_tutor),
-                headers=self.headers_private)
+                headers=self.headers_admin)
         data = json.loads(response.data)
 
         # check status code, success message & compare length before & after
@@ -114,7 +100,7 @@ class TextTutorTestCase(unittest.TestCase):
 
         response = self.client().post('/api/subjects',
                 data=json.dumps(test_subject),
-                headers=self.headers_private)
+                headers=self.headers_admin)
         data = json.loads(response.data)
 
         # check status code, success message & compare length before & after
@@ -131,7 +117,7 @@ class TextTutorTestCase(unittest.TestCase):
         response = self.client().patch(
                 '/api/tutors/654321',
                 json=patched_tutor,
-                headers=self.headers_private)
+                headers=self.headers_admin)
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -150,7 +136,7 @@ class TextTutorTestCase(unittest.TestCase):
         t_id = delete_tutor.id
 
         response = self.client().delete('/api/tutors/{}'.format(t_id),
-                headers=self.headers_private)
+                headers=self.headers_admin)
         data = json.loads(response.data)
 
         # check status code, success message & compare length before & after
@@ -170,7 +156,7 @@ class TextTutorTestCase(unittest.TestCase):
 
 
         response = self.client().delete('/api/subject/{}'.format(s_id),
-                headers=self.headers_private)
+                headers=self.headers_admin)
         data = json.loads(response.data)
 
         # check status code, success message & compare length before & after
@@ -182,7 +168,8 @@ class TextTutorTestCase(unittest.TestCase):
         """test failure of question creation error 400"""
         tutors_before = Tutor.query.all()
 
-        response = self.client().post('/api/tutors', json={})
+        response = self.client().post('/api/tutors', json={},
+                headers=self.headers_admin)
         data = json.loads(response.data)
         tutors_after = Tutor.query.all()
 
@@ -194,7 +181,8 @@ class TextTutorTestCase(unittest.TestCase):
         """test failure of question creation error 400"""
         subjects_before = Subject.query.all()
 
-        response = self.client().post('/api/subjects', json={})
+        response = self.client().post('/api/subjects', json={},
+                headers=self.headers_admin)
         data = json.loads(response.data)
         subjects_after = Subject.query.all()
 
@@ -211,36 +199,11 @@ class TextTutorTestCase(unittest.TestCase):
         response = self.client().patch(
                 '/api/tutors/654321',
                 json=patched_tutor,
-                headers=self.headers_private)
+                headers=self.headers_admin)
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 422)
         self.assertFalse(data['success'])
-
-    def test_get_subject_tutors(self):
-        """test success of getting tutors by subjects"""
-        response = self.client().get('/api/subjects/1/tutors',
-                headers=self.headers_public)
-        data = json.loads(response.data)
-
-        # check status code, success message,
-        # num of questions and current category
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertTrue(len(data['tutors']))
-        self.assertTrue(data['total_tutors'])
-
-    def test_404_get_subject_tutors(self):
-        """test for 404 error of getting tutors by subjects"""
-        response = self.client().get('/api/subjects/1/tutors',
-                headers=self.headers_public)
-        data = json.loads(response.data)
-
-        # check status code, false success message
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data["success"], False)
-        self.assertEqual(data["message"], "resource not found")
-
 
 # Make the tests conveniently executable
 if __name__ == "__main__":

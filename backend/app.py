@@ -80,7 +80,7 @@ def create_app(test_config=None):
 
     @app.route('/api/tutors/<int:id>')
     @requires_auth('get:tutor')
-    def show_tutor(jwt):
+    def show_tutor(jwt, id):
         '''
         Handles GET requests for tutor by id.
         '''
@@ -256,7 +256,7 @@ def create_app(test_config=None):
 
     @app.route('/api/subjects/<int:id>')
     @requires_auth('get:subject')
-    def show_subject(jwt):
+    def show_subject(jwt,id):
         '''
         Handles GET requests for getting subjects by id
         '''
