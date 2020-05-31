@@ -58,7 +58,6 @@ class Tutor(db.Model):
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     phone = Column(String, nullable=False)
-    # image_link = Column(String, nullable=True)
 
     classes = relationship('Subject', secondary="tutor_subjects", backref=backref('tutors', lazy=True))
 

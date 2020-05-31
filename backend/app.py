@@ -100,17 +100,23 @@ def create_app(test_config=None):
         '''
         body = request.get_json()
 
-        new_name = body.get('name')
-        new_phone = body.get('phone')
-        new_email = body.get('email')
-        new_classes = body.get('classes')
+        name = body.get('name')
+        phone = body.get('phone')
+        email = body.get('email')
+        classes = body.get('classes')
 
         # try:
         tutor = Tutor(
-            name=new_name, phone=new_phone,
-            email=new_email, classes=new_classes
+            name=name, phone=phone,
+            email=email
         )
+
+
         print('tutor: ', tutor)
+        for subject in classes:
+            tutor_subjects = add_class(subject)
+            print("tutorsubs: ", tutor_subjects)
+            tutor.classes.append(tutor_subjects)
         tutor.insert()
 
         # except Exception as e:
@@ -125,6 +131,14 @@ def create_app(test_config=None):
         }
 
         return jsonify(response)
+
+    def add_class(subject):
+        # existing_class = Subject.query.filter(Subject.name == subject['name']).one_or_none()
+        # if existing_class is not None:
+        #     return existing_class
+        # else:
+        new_class = Subject(name=subject['name'],grade=subject['grade'])
+        return new_class
 
     @app.route('/api/tutors/<int:id>', methods=['PATCH'])
     # @requires_auth('patch:tutors')
@@ -387,10 +401,19 @@ def create_app(test_config=None):
             "message": "internal server error"
         }), 422
 
+    # @app.errorhandler(AuthError)
+    # def handle_auth_error(ex):
+    #     '''
+    #     Error handling for AuthError
+    #     '''
+    #     message = ex.error['description']
+    #     response = jsonify(ex.error)
+    #     response.status_code = ex.status_code
+    #     print('AUTH ERROR: ', response.get_data(as_text=True))
+    #     flash(f'{message} Please login.')
+    #     return redirect('/')
+
     return app
-
-
-
 
 app = create_app()
 
