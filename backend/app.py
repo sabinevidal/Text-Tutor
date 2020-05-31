@@ -150,6 +150,11 @@ def create_app(test_config=None):
 
         body = request.get_json()
 
+        name = body.get('name')
+        phone = body.get('phone')
+        email = body.get('email')
+        classes = body.get('classes')
+
         if 'name' in body:
             tutor.name = body['name']
         if 'phone' in body:
@@ -157,15 +162,13 @@ def create_app(test_config=None):
         if 'email' in body:
             tutor.email = body['email']
         if 'classes' in body:
-            tutor.classes = body['classes']
-
-        for subject in classes:
-            tutor_subjects = add_class(subject)
-            print("tutorsubs: ", tutor_subjects)
-            tutor.classes.append(tutor_subjects)
+            for subject in classes:
+                tutor_subjects = add_class(subject)
+                print("tutorsubs: ", tutor_subjects)
+                tutor.classes.append(tutor_subjects)
 
         try:
-            tutor.insert()
+            tutor.update()
         except Exception as e:
             print('EXCEPTION: ', str(e))
             abort(422)
