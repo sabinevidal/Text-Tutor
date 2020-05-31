@@ -1,18 +1,21 @@
 import os
 import json
-from flask import Flask, request, redirect, abort, jsonify, render_template, flash, session, url_for, make_response
+from flask import (Flask, request,
+                   redirect, abort, jsonify,
+                   render_template, flash, session,
+                   url_for, make_response)
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.dialects.postgresql import JSON
 
 from models import *
 from auth.auth import AuthError, requires_auth
-#----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 # App Config.
-#----------------------------------------------------------------------------#
+# ----------------------------------------------------------------------------#
 TUTORS_PER_PAGE = 10
 
-# paginating Tutors
+
 def paginate_tutors(request, selection):
     page = request.args.get('page', 1, type=int)
     start = (page - 1) * TUTORS_PER_PAGE
@@ -29,10 +32,8 @@ def create_app(test_config=None):
     app = Flask(__name__)
     setup_db(app)
 
-    # Set up CORS with '*' for origins
     CORS(app, resources={'/': {'origins': '*'}}, supports_credentials=True)
 
-    # CORS headers to set access control
     @app.after_request
     def after_request(response):
         response.headers.add('Access-Control-Allow-Headers',
@@ -94,8 +95,7 @@ def create_app(test_config=None):
             'tutor': tutor.format()
         })
 
-
-# CREATE
+    # CREATE
     @app.route('/api/tutors', methods=['POST'])
     @requires_auth('post:tutor')
     def add_tutor(jwt):
@@ -132,11 +132,11 @@ def create_app(test_config=None):
         return jsonify(response)
 
     def add_class(subject):
-        new_class = Subject(name=subject['name'],grade=subject['grade'])
+        new_class = Subject(name=subject['name'], grade=subject['grade'])
         return new_class
 
     @app.route('/api/tutors/<int:id>', methods=['PATCH'])
-    @requires_auth('patch:tutor') 
+    @requires_auth('patch:tutor')
     def edit_tutor(*args, **kwargs):
         id = kwargs['id']
 
@@ -177,9 +177,7 @@ def create_app(test_config=None):
 
         return jsonify(response)
 
-
-
-# DELETE
+    # DELETE
     @app.route('/api/tutors/<int:id>', methods=['DELETE'])
     @requires_auth('delete:tutor')
     def delete_tutor(*args, **kwargs):
@@ -199,17 +197,14 @@ def create_app(test_config=None):
             print('EXCEPTION: ', str(e))
             abort(422)
 
-        # flash(f'{tutor.name}\'s details successfully deleted.')
-
         return jsonify({
             'success': True,
             'tutor': tutor.name,
             'deleted_id': id
         })
 
-
-# ----------- SUBJECTS ----------
-# CREATE
+    # ----------- SUBJECTS ----------
+    # CREATE
 
     @app.route('/api/subjects', methods=['POST'])
     @requires_auth('post:subject')
@@ -237,7 +232,7 @@ def create_app(test_config=None):
 
         return jsonify(response)
 
-# GET 
+    # GET
     @app.route('/api/subjects')
     def get_subjects():
         subjects = Subject.query.order_by(Subject.grade).all()
@@ -253,10 +248,9 @@ def create_app(test_config=None):
         }
         return jsonify(response)
 
-
     @app.route('/api/subjects/<int:id>')
     @requires_auth('get:subject')
-    def show_subject(jwt,id):
+    def show_subject(jwt, id):
         '''
         Handles GET requests for getting subjects by id
         '''
@@ -271,7 +265,7 @@ def create_app(test_config=None):
         }
         return jsonify(response)
 
-# DELETE
+    # DELETE
     @app.route('/api/subjects/<int:id>', methods=['DELETE'])
     @requires_auth('delete:subject')
     def delete_subject(*args, **kwargs):
