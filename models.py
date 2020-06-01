@@ -20,7 +20,7 @@ database_path = "postgresql://sabinevidal:password@localhost:5432/text-tutor"
 db = SQLAlchemy()
 
 def setup_db(app, database_path=database_path):
-    app.config["DATABASE_URL"] = database_path
+    app.config["DATABASE_URL"] = database_path or os.environ['DATABASE_URL']
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config.from_object(Config)
