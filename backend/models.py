@@ -15,7 +15,7 @@ from .config import Config
 
 database_filename = "text-tutor"
 project_dir = os.path.dirname(os.path.abspath(__file__))
-database_path = "postgres://sabinevidal:password@{}/{}".format('localhost:5432', database_filename)
+database_path = "postgresql://sabinevidal:password@localhost:5432/text-tutor"
 
 db = SQLAlchemy()
 
