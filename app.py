@@ -53,11 +53,10 @@ def create_app(test_config=None):
 # ROUTES
 # ----------------------------------
 
-# # TODO: FRONTEND index home page
-#     @app.route('/')
-#     def index():
-
-#         return render_template('index.html', title='Home!')
+    def index():
+        return jsonify({
+            'success' : True
+        })
 
 # ----------- TUTORS ----------
 
