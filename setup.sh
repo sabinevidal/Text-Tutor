@@ -5,3 +5,4 @@ export ALGORITHMS=['RS256']
 export API_AUDIENCE=https://text-tutor/
 export FLASK_APP=app.py
 export FLASK_ENV=development
+export SQLALCHEMY_DATABASE_URI=DATABASE_URL
