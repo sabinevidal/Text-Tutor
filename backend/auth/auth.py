@@ -3,7 +3,7 @@ import json
 import os
 from flask import request, session
 from functools import wraps
-from jose import jwt
+from python-jose import jwt
 from urllib.request import urlopen
 
 # Constants
