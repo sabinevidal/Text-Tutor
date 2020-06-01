@@ -3,8 +3,8 @@ import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
 
-from app import *
-from models import *
+from .app import *
+from .models import *
 
 # PRIVATE USER GENERATED FOR TESTING PURPOSES ONLY
 # HAS ALL PERMISSIONS:

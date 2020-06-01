@@ -8,7 +8,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, CheckConstraint, Boo
 from sqlalchemy.orm import relationship, backref
 import json
 
-from config import Config
+from .config import Config
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
