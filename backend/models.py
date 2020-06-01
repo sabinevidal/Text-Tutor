@@ -15,7 +15,6 @@ from config import Config
 
 database_filename = "text-tutor"
 project_dir = os.path.dirname(os.path.abspath(__file__))
-# database_path = os.environ['DATABASE_URL']
 database_path = "postgres://sabinevidal:password@{}/{}".format('localhost:5432', database_filename)
 
 db = SQLAlchemy()
@@ -122,9 +121,6 @@ class Subject(db.Model):
             'grade': self.grade,
             'name': self.name
         }
-    # def short(self):
-    #     short_sub = [{'grade': r['grade'], 'name': r['name']}]
-
 
 class TutorsSubjects(db.Model):
     __tablename__ = 'tutor_subjects'
