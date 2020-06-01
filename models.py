@@ -8,12 +8,12 @@ from sqlalchemy import Column, Integer, String, ForeignKey, CheckConstraint, Boo
 from sqlalchemy.orm import relationship, backref
 import json
 
-from config import Config
+from config import Config, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
 
-database_filename = "text-tutor"
+database_name = "text-tutor"
 project_dir = os.path.dirname(os.path.abspath(__file__))
 database_path = "postgresql://sabinevidal:password@localhost:5432/text-tutor"
 
@@ -21,8 +21,8 @@ db = SQLAlchemy()
 
 def setup_db(app, database_path=database_path):
     app.config["DATABASE_URL"] = database_path or os.environ['DATABASE_URL']
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = SQLALCHEMY_TRACK_MODIFICATIONS
     app.config.from_object(Config)
     db.app = app
     db.init_app(app)
@@ -30,7 +30,7 @@ def setup_db(app, database_path=database_path):
 db_drop_and_create_all()
     drops the database tables and starts fresh
     can be used to initialize a clean database
-    !!NOTE you can change the database_filename variable to have multiple verisons of a database
+    !!NOTE you can change the database_name variable to have multiple verisons of a database
 '''
 def db_drop_and_create_all():
     db.drop_all()
