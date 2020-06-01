@@ -8,8 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.dialects.postgresql import JSON
 
-from .models import *
-from .auth.auth import AuthError, requires_auth
+from models import *
+from auth.auth import AuthError, requires_auth
 # ----------------------------------------------------------------------------#
 # App Config.
 # ----------------------------------------------------------------------------#
